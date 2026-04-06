@@ -38,6 +38,24 @@ export class SprComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.data = this.sprService.getData();
+    this.assignStage();
+  }
+  assignStage(){
+    let category : any = [];
+    for(let i=0; i<=this.data.overallProgress.length-1;i++){ 
+      this.data.overallProgress[i].stageNo = 0;    
+      if(!this.data.overallProgress[i].stageNo){
+        if(category.indexOf(this.data.overallProgress[i].category.split(' - ')[0]) === -1){
+          category.push(this.data.overallProgress[i].category.split(' - ')[0]);
+          this.data.overallProgress[i].stageNo = 1;
+        }else{
+          category.push(this.data.overallProgress[i].category.split(' - ')[0]);
+          this.data.overallProgress[i].stageNo = category.filter((ele:string)=> ele === this.data.overallProgress[i].category.split(' - ')[0]).length;
+        }
+      }
+    }
+    console.log(category);
+    console.log(this.data.overallProgress);
   }
 
   ngAfterViewInit(): void {
@@ -81,5 +99,11 @@ export class SprComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getDocStatusClass(status: string): string {
     return status === 'Closed' ? 'doc-closed' : 'doc-open';
+  }
+
+  getRowSpan(category:string){
+    return this.data.overallProgress.filter((elem)=>{
+      return category === elem.category.split(' - ')[0];
+    }).length;
   }
 }

@@ -38,6 +38,7 @@ export interface OverallProgress {
   forecastFinish: string;
   weightage: number;
   reportedPercent: number;
+  stageNo?: number;
 }
 
 // ── Page 2: Contract and Changes ──────────────────────────────────────────────

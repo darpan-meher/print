@@ -12,463 +12,500 @@
 
 <!-- ══════════════════════════════════════════════════════════════════════
      PRINT ROOT
-     Strategy: one outer <table> whose <thead> / <tfoot> repeats on every
-     printed page.  Each <tbody> row is one logical "page".
-     The IntersectionObserver in the component watches .page-sentinel divs
-     to keep currentPageTitle in sync as the user scrolls on screen.
+     Outer <table>  →  <thead> repeats page header on every printed page
+                    →  <tfoot> repeats footer on every printed page
+                    →  each <tbody><tr> is one logical report page
 ══════════════════════════════════════════════════════════════════════ -->
 <div class="print-root" *ngIf="data">
   <table class="outer-tbl">
 
-    <!-- ══ REPEATING PAGE HEADER ══════════════════════════════════════ -->
+    <!-- ══ REPEATING PAGE HEADER ════════════════════════════════════════ -->
     <thead class="spr-page-header">
       <tr>
-        <th>
-          <div class="hdr-band">
-            <!-- GE logo + name -->
-            <div class="hdr-left">
-              <div class="ge-logo-box">
+        <th colspan="2">
+          <!-- Header band rendered as an inner table for precise alignment -->
+          <table class="hdr-table">
+            <tr>
+              <td class="hdr-cell-logo">
                 <svg width="34" height="34" viewBox="0 0 34 34">
                   <circle cx="17" cy="17" r="16" fill="none" stroke="#1760a5" stroke-width="2.2"/>
                   <text x="17" y="22" text-anchor="middle" font-size="13" font-weight="bold" fill="#1760a5">GE</text>
                 </svg>
-              </div>
-              <div class="ge-name">GE VERNOVA</div>
-            </div>
-
-            <!-- Report title + DYNAMIC page name -->
-            <div class="hdr-center">
-              <div class="hdr-report-title">SUPPLIER PROGRESS REPORT</div>
-              <div class="hdr-page-name">
-                <span class="page-name-pill">{{ currentPageTitle }}</span>
-              </div>
-            </div>
-
-            <!-- SISU brand -->
-            <div class="hdr-right">
-              <div class="sisu-logo">SISU</div>
-              <div class="sisu-sub">ENERGY &amp; ENVIRONMENTAL</div>
-            </div>
-
-            <!-- SPR version box -->
-            <div class="hdr-version-box">
-              <div class="ver-title">SPR Version</div>
-              <div class="ver-row"><span>Rev. No:</span>    <strong>{{ data.version.revNo }}</strong></div>
-              <div class="ver-row"><span>Reference:</span>  <strong>{{ data.version.reference }}</strong></div>
-              <div class="ver-row"><span>Date:</span>       <strong>{{ data.version.date }}</strong></div>
-            </div>
-          </div>
+                <span class="ge-name">GE VERNOVA</span>
+              </td>
+              <td class="hdr-cell-title">
+                <div class="hdr-report-title">SUPPLIER PROGRESS REPORT</div>
+                <div class="hdr-page-name">
+                  <span class="page-name-pill">{{ currentPageTitle }}</span>
+                </div>
+              </td>
+              <td class="hdr-cell-sisu">
+                <div class="sisu-logo">SISU</div>
+                <div class="sisu-sub">ENERGY &amp; ENVIRONMENTAL</div>
+              </td>
+              <td class="hdr-cell-version">
+                <table class="ver-table">
+                  <tr><td colspan="2" class="ver-title">SPR Version</td></tr>
+                  <tr><td class="ver-label">Rev. No:</td>   <td class="ver-value">{{ data.version.revNo }}</td></tr>
+                  <tr><td class="ver-label">Reference:</td> <td class="ver-value">{{ data.version.reference }}</td></tr>
+                  <tr><td class="ver-label">Date:</td>      <td class="ver-value">{{ data.version.date }}</td></tr>
+                </table>
+              </td>
+            </tr>
+          </table>
         </th>
       </tr>
     </thead>
 
-    <!-- ══ REPEATING PAGE FOOTER ══════════════════════════════════════ -->
+    <!-- ══ REPEATING PAGE FOOTER ════════════════════════════════════════ -->
     <tfoot class="spr-page-footer">
       <tr>
-        <td>
-          <div class="ftr-band">
-            <span>GE Vernova Supplier Progress Report — Confidential</span>
-            <span>{{ currentPageTitle }} &nbsp;|&nbsp; Rev {{ data.version.revNo }} &nbsp;|&nbsp; {{ data.version.date }}</span>
-          </div>
+        <td colspan="2">
+          <table class="ftr-table">
+            <tr>
+              <td class="ftr-left">GE Vernova Supplier Progress Report — Confidential</td>
+              <td class="ftr-right">{{ currentPageTitle }} &nbsp;|&nbsp; Rev {{ data.version.revNo }} &nbsp;|&nbsp; {{ data.version.date }}</td>
+            </tr>
+          </table>
         </td>
       </tr>
     </tfoot>
 
-    <!-- ══════════════════════════════════════════════════════════════
+    <!-- ════════════════════════════════════════════════════════════════
          PAGE 1 — PO-Line Detail page
-    ══════════════════════════════════════════════════════════════ -->
+    ════════════════════════════════════════════════════════════════ -->
     <tbody>
-      <tr><td>
-        <div class="page-section page-break-after">
-
-          <!-- sentinel: IntersectionObserver detects this page -->
-          <div class="page-sentinel" id="page-po-detail" data-page-id="page-po-detail"></div>
-
-          <div class="page-subtitle">{{ pages[0].title }}</div>
-          <div class="two-col-layout">
-
-            <!-- ── LEFT: PO-Line Progress ───────────────────────── -->
-            <div class="panel">
-              <div class="panel-title">PO-Line Progress</div>
-              <div class="promise-date-label">Promise Date</div>
-              <table class="data-table po-table">
-                <thead>
-                  <tr>
-                    <th class="col-po">PO-<br>Line</th>
-                    <th class="col-unit">Unit #</th>
-                    <th class="col-desc">Item Description</th>
-                    <th class="col-date">ERP PO Need Date</th>
-                    <th class="col-date">(Supplier committed date)</th>
-                    <th class="col-status">Current Status</th>
-                    <th class="col-pct">%</th>
-                    <th class="col-otd">OTD Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let item of data.poLineItems"
-                      [class.row-late]="item.isLate">
-                    <td>{{ item.poLine }}</td>
-                    <td>{{ item.unitNo }}</td>
-                    <td>{{ item.itemDescription }}</td>
-                    <td>{{ item.erpPoNeedDate }}</td>
-                    <td [class.cell-late]="item.isLate">{{ item.promiseDate }}</td>
-                    <td>{{ item.currentStatus }}</td>
-                    <td>{{ item.percent }}%</td>
-                    <td>
-                      <span class="otd-badge" [ngClass]="getOtdClass(item.otdStatus)">
-                        {{ item.otdStatus }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- ── RIGHT: Engineering / Quality Document list ────── -->
-            <div class="panel">
-              <div class="panel-title">Engineering / Quality Document Submission list</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Document No.</th>
-                    <th>Current Revision No.</th>
-                    <th>Title</th>
-                    <th>Panel ty/LD</th>
-                    <th>First Submission Due Date</th>
-                    <th>Actual Submission Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let doc of data.engineeringDocs; let i = index"
-                      [class.row-alt]="i % 2 !== 0">
-                    <td>{{ doc.documentNo }}</td>
-                    <td class="center">{{ doc.currentRevisionNo }}</td>
-                    <td>{{ doc.title }}</td>
-                    <td class="center">{{ doc.panelLd }}</td>
-                    <td>{{ doc.firstSubmissionDueDate }}</td>
-                    <td>{{ doc.actualSubmissionDate }}</td>
-                    <td>
-                      <span class="doc-status" [ngClass]="getDocStatusClass(doc.status)">
-                        {{ doc.status }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-          </div><!-- /two-col-layout -->
-        </div><!-- /page 1 -->
-      </td></tr>
-
-      <!-- ══════════════════════════════════════════════════════════════
+      <!-- ════════════════════════════════════════════════════════════════
            PAGE 2 — PO Summary page
-      ══════════════════════════════════════════════════════════════ -->
-      <tr><td>
+      ════════════════════════════════════════════════════════════════ -->
+      <tr><td colspan="2">
         <div class="page-section page-break-after">
-
-          <!-- sentinel -->
           <div class="page-sentinel" id="page-po-summary" data-page-id="page-po-summary"></div>
+          <!-- <div class="page-subtitle">{{ pages[1].title }}</div> -->
 
-          <div class="page-subtitle">{{ pages[1].title }}</div>
-          <div class="summary-grid">
+          <!-- ── Row 1: Supplier info (1/3) + Overall Progress (2/3) ── -->
+          <table class="layout-table">
+            <tr>
+              <td class="layout-cell" style="width:40%">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th class="panel-title-cell">Supplier Progress Report</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="box-content-cell small-text">
+                        <div><strong>Supplier:</strong> {{ data.supplier }}</div>
+                        <div><strong>Project:</strong> {{ data.project }}</div>
+                        <div><strong>GEV PO:</strong> {{ data.gevPo }} &nbsp;&nbsp; <strong>Supplier PO:</strong> {{ data.supplierPo }}</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="panel-table" style="margin-top: 10px">
+                  <thead>
+                    <tr><th class="panel-title-cell">Supplier Summary</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="box-content-cell small-text">{{ data.supplierSummary }}</td></tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="layout-cell" style="width:60%">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th colspan="8" class="panel-title-cell">Overall Progress</th></tr>
+                    <tr class="data-thead">
+                      <th rowspan="2"></th>
+                      <th rowspan="2"></th>
+                      <th colspan="2" class="center">Baseline</th>
+                      <th colspan="2" class="center">Current Forecast</th>
+                      <th rowspan="2" class="center">Compl. Status in %<br>Weightage</th>
+                      <th rowspan="2" class="center">Reported %</th>
+                      <th rowspan="2" class="center total-col" style="border-top: 2px solid black;">Total PO Progress</th>
+                    </tr>
+                    <tr class="data-thead">
+                      <th class="center">Start Date</th>
+                      <th class="center">Finish Date</th>
+                      <th class="center">Start Date</th>
+                      <th class="center">Finish Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let p of data.overallProgress; let i = index"
+                        [class.row-alt]="i % 2 !== 0">
+                      <td>{{ p.category.split(' - ')[1] }}</td>
+                      <td [attr.rowspan]="getRowSpan(p.category.split(' - ')[0])" *ngIf="p.stageNo === 1">{{ p.category.split(' - ')[0] }}</td>
+                      <td class="center">{{ p.baselineStart }}</td>
+                      <td class="center">{{ p.baselineFinish }}</td>
+                      <td class="center">{{ p.forecastStart }}</td>
+                      <td class="center">{{ p.forecastFinish }}</td>
+                      <td class="center">{{ p.weightage }}</td>
+                      <td class="center">{{ p.reportedPercent }}%</td>
+                      <td class="center total-col"
+                          *ngIf="i === 0"
+                          [attr.rowspan]="data.overallProgress.length">
+                        <div class="total-progress-circle">{{ data.totalPoProgress }}%</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
 
-            <!-- Supplier info -->
-            <div class="summary-box">
-              <div class="box-title">Supplier Progress Report</div>
-              <div class="box-content small-text">
-                <div><strong>Supplier:</strong> {{ data.supplier }}</div>
-                <div><strong>Project:</strong> {{ data.project }}</div>
-                <div>
-                  <strong>GEV PO:</strong> {{ data.gevPo }} &nbsp;&nbsp;
-                  <strong>Supplier PO:</strong> {{ data.supplierPo }}
-                </div>
-              </div>
-            </div>
+          <!-- ── Row 2: Supplier Summary (1/3) + Contract & Changes (2/3) ── -->
+          <table class="layout-table">
+            <tr>
+              <!-- <td class="layout-cell" style="width:33%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th class="panel-title-cell">Supplier Summary</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="box-content-cell small-text">{{ data.supplierSummary }}</td></tr>
+                  </tbody>
+                </table>
+              </td> -->
+              <td class="layout-cell">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th colspan="7" class="panel-title-cell">Contract and Changes</th></tr>
+                    <tr class="data-thead">
+                      <th>#</th>
+                      <th>Category</th>
+                      <th>Reference Doc.</th>
+                      <th>Request receive date</th>
+                      <th>Impact</th>
+                      <th>Issue / Concern Description</th>
+                      <th>PO-Lines</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let c of data.contractChanges">
+                      <td>{{ c.no }}</td>
+                      <td>{{ c.category }}</td>
+                      <td>{{ c.referenceDoc }}</td>
+                      <td>{{ c.requestReceiveDate }}</td>
+                      <td>{{ c.impact }}</td>
+                      <td>{{ c.issueDescription }}</td>
+                      <td>{{ c.poLines }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
 
-            <!-- Overall Progress -->
-            <div class="summary-box span-right">
-              <div class="box-title">Overall Progress</div>
-              <table class="data-table progress-table">
-                <thead>
-                  <tr>
-                    <th rowspan="2"></th>
-                    <th colspan="2" class="center">Baseline</th>
-                    <th colspan="2" class="center">Current Forecast</th>
-                    <th rowspan="2" class="center">Compl. Status in %<br>Weightage</th>
-                    <th rowspan="2" class="center">Reported %</th>
-                    <th rowspan="2" class="center total-col">Total PO Progress</th>
-                  </tr>
-                  <tr>
-                    <th class="center">Start Date</th>
-                    <th class="center">Finish Date</th>
-                    <th class="center">Start Date</th>
-                    <th class="center">Finish Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let p of data.overallProgress; let i = index"
-                      [class.row-alt]="i % 2 !== 0">
-                    <td>{{ p.category }}</td>
-                    <td class="center">{{ p.baselineStart }}</td>
-                    <td class="center">{{ p.baselineFinish }}</td>
-                    <td class="center">{{ p.forecastStart }}</td>
-                    <td class="center">{{ p.forecastFinish }}</td>
-                    <td class="center">{{ p.weightage }}</td>
-                    <td class="center">{{ p.reportedPercent }}%</td>
-                    <td class="center total-col"
-                        *ngIf="i === 0"
-                        [attr.rowspan]="data.overallProgress.length">
-                      <div class="total-progress-circle">{{ data.totalPoProgress }}%</div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <!-- ── Row 3: Witness Points (1/2) + Sub-suppliers (1/2) ── -->
+          <table class="layout-table">
+            <tr>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="5" class="panel-title-cell">GEV / End Customer witness points (running list)</th></tr>
+                    <tr class="data-thead">
+                      <th>Inspection Point</th>
+                      <th>Planned</th>
+                      <th>Actual</th>
+                      <th>Attendance</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let ip of data.inspectionPoints">
+                      <td style="white-space:pre-line">{{ ip.inspectionPoint }}</td>
+                      <td>{{ ip.planned }}</td>
+                      <td>{{ ip.actual }}</td>
+                      <td>{{ ip.attendance }}</td>
+                      <td>{{ ip.status }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="7" class="panel-title-cell">Purchasing / Subcontracting Detailed Status — Main / Critical sub-suppliers</th></tr>
+                    <tr class="data-thead">
+                      <th rowspan="2">Item</th>
+                      <th rowspan="2">Sub Supplier</th>
+                      <th colspan="2" class="center">Order Date</th>
+                      <th colspan="2" class="center">Delivery Date</th>
+                      <th rowspan="2">Comments</th>
+                    </tr>
+                    <tr class="data-thead">
+                      <th class="center">Planned</th>
+                      <th class="center">Actual</th>
+                      <th class="center">Planned</th>
+                      <th class="center">Actual</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let s of data.subSuppliers; let i = index"
+                        [class.row-alt]="i % 2 !== 0">
+                      <td>{{ s.item }}</td>
+                      <td>{{ s.subSupplier }}</td>
+                      <td>{{ s.orderDatePlanned }}</td>
+                      <td>{{ s.orderDateActual }}</td>
+                      <td>{{ s.deliveryDatePlanned }}</td>
+                      <td>{{ s.deliveryDateActual }}</td>
+                      <td>{{ s.comments }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
 
-            <!-- Supplier Summary -->
-            <div class="summary-box">
-              <div class="box-title">Supplier Summary</div>
-              <div class="box-content small-text">{{ data.supplierSummary }}</div>
-            </div>
+          <!-- ── Row 4: NCR (1/2) + GEV Review (1/2) ── -->
+          <table class="layout-table">
+            <tr>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="4" class="panel-title-cell">Supplier Deviation Request / Non-Conformance Reports</th></tr>
+                    <tr class="data-thead">
+                      <th>NCR-No.</th>
+                      <th>Detail of NC</th>
+                      <th>Disposition status</th>
+                      <th>Target Closure Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="4" class="empty-row">—</td></tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th colspan="4" class="panel-title-cell">GEV Review</th></tr>
+                    <tr class="data-thead">
+                      <th>#</th>
+                      <th>Date</th>
+                      <th>Comment</th>
+                      <th>Resp.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let r of data.gevReviews">
+                      <td>{{ r.no }}</td>
+                      <td>{{ r.date }}</td>
+                      <td>{{ r.comment }}</td>
+                      <td>{{ r.resp }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
 
-            <!-- Contract and Changes -->
-            <div class="summary-box span-right">
-              <div class="box-title">Contract and Changes</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Category</th>
-                    <th>Reference Doc.</th>
-                    <th>Request receive date</th>
-                    <th>Impact</th>
-                    <th>Issue / Concern Description</th>
-                    <th>PO-Lines</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let c of data.contractChanges">
-                    <td>{{ c.no }}</td>
-                    <td>{{ c.category }}</td>
-                    <td>{{ c.referenceDoc }}</td>
-                    <td>{{ c.requestReceiveDate }}</td>
-                    <td>{{ c.impact }}</td>
-                    <td>{{ c.issueDescription }}</td>
-                    <td>{{ c.poLines }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <!-- ── Row 5: Area of Concern (1/2) + Key Actions (1/2) ── -->
+          <table class="layout-table">
+            <tr>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="3" class="panel-title-cell">Area of Concern</th></tr>
+                    <tr class="data-thead">
+                      <th>#</th>
+                      <th>Category</th>
+                      <th>Issue / Concern Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let a of data.areasOfConcern">
+                      <td>{{ a.no }}</td>
+                      <td>{{ a.category }}</td>
+                      <td>{{ a.issueDescription }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th colspan="7" class="panel-title-cell">Key Actions</th></tr>
+                    <tr class="data-thead">
+                      <th>#</th>
+                      <th>Date</th>
+                      <th>Category</th>
+                      <th>Action description</th>
+                      <th>Target Date</th>
+                      <th>Resp.</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let k of data.keyActions">
+                      <td>{{ k.no }}</td>
+                      <td>{{ k.date }}</td>
+                      <td>{{ k.category }}</td>
+                      <td>{{ k.actionDescription }}</td>
+                      <td>{{ k.targetDate }}</td>
+                      <td>{{ k.resp }}</td>
+                      <td>
+                        <span 
+                              [ngClass]="k.status === 'Open' ? 'doc-open' : 'doc-closed'">
+                          {{ k.status }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
 
-            <!-- GEV / End Customer Witness Points -->
-            <div class="summary-box half">
-              <div class="box-title">GEV / End Customer witness points (running list)</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Inspection Point</th>
-                    <th>Planned</th>
-                    <th>Actual</th>
-                    <th>Attendance</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let ip of data.inspectionPoints">
-                    <td style="white-space:pre-line">{{ ip.inspectionPoint }}</td>
-                    <td>{{ ip.planned }}</td>
-                    <td>{{ ip.actual }}</td>
-                    <td>{{ ip.attendance }}</td>
-                    <td>{{ ip.status }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Purchasing / Subcontracting -->
-            <div class="summary-box half">
-              <div class="box-title">Purchasing / Subcontracting Detailed Status — Main / Critical sub-suppliers</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th rowspan="2">Item</th>
-                    <th rowspan="2">Sub Supplier</th>
-                    <th colspan="2" class="center">Order Date</th>
-                    <th colspan="2" class="center">Delivery Date</th>
-                    <th rowspan="2">Comments</th>
-                  </tr>
-                  <tr>
-                    <th class="center">Planned</th>
-                    <th class="center">Actual</th>
-                    <th class="center">Planned</th>
-                    <th class="center">Actual</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let s of data.subSuppliers; let i = index"
-                      [class.row-alt]="i % 2 !== 0">
-                    <td>{{ s.item }}</td>
-                    <td>{{ s.subSupplier }}</td>
-                    <td>{{ s.orderDatePlanned }}</td>
-                    <td>{{ s.orderDateActual }}</td>
-                    <td>{{ s.deliveryDatePlanned }}</td>
-                    <td>{{ s.deliveryDateActual }}</td>
-                    <td>{{ s.comments }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Supplier Deviation / NCR -->
-            <div class="summary-box half">
-              <div class="box-title">Supplier Deviation Request / Non-Conformance Reports</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>NCR-No.</th>
-                    <th>Detail of NC</th>
-                    <th>Disposition status</th>
-                    <th>Target Closure Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td colspan="4" class="empty-row">—</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- GEV Review -->
-            <div class="summary-box half">
-              <div class="box-title">GEV Review</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Comment</th>
-                    <th>Resp.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let r of data.gevReviews">
-                    <td>{{ r.no }}</td>
-                    <td>{{ r.date }}</td>
-                    <td>{{ r.comment }}</td>
-                    <td>{{ r.resp }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Area of Concern -->
-            <div class="summary-box half">
-              <div class="box-title">Area of Concern</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Category</th>
-                    <th>Issue / Concern Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let a of data.areasOfConcern">
-                    <td>{{ a.no }}</td>
-                    <td>{{ a.category }}</td>
-                    <td>{{ a.issueDescription }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Key Actions -->
-            <div class="summary-box half">
-              <div class="box-title">Key Actions</div>
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Action description</th>
-                    <th>Target Date</th>
-                    <th>Resp.</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let k of data.keyActions">
-                    <td>{{ k.no }}</td>
-                    <td>{{ k.date }}</td>
-                    <td>{{ k.category }}</td>
-                    <td>{{ k.actionDescription }}</td>
-                    <td>{{ k.targetDate }}</td>
-                    <td>{{ k.resp }}</td>
-                    <td>
-                      <span class="doc-status"
-                            [ngClass]="k.status === 'Open' ? 'doc-open' : 'doc-closed'">
-                        {{ k.status }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-          </div><!-- /summary-grid -->
         </div><!-- /page 2 -->
       </td></tr>
 
-      <!-- ══════════════════════════════════════════════════════════════
+
+            <tr><td colspan="2">
+        <div class="page-section page-break-after">
+          <div class="page-sentinel" id="page-po-detail" data-page-id="page-po-detail"></div>
+          <div class="page-subtitle">{{ pages[0].title }}</div>
+
+          <!-- ── Page 1 layout: two equal columns via table ── -->
+          <table class="layout-table">
+            <tr>
+              <!-- LEFT: PO-Line Progress -->
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table red-color-border">
+                  <thead>
+                    <tr><th colspan="8" class="panel-title-cell">PO-Line Progress</th></tr>
+                    <tr class="data-thead">
+                      <th class="col-po">PO-<br>Line</th>
+                      <th class="col-unit">Unit #</th>
+                      <th class="col-desc">Item Description</th>
+                      <th class="col-date">ERP PO Need Date</th>
+                      <th class="col-date">Promise Date (Supplier committed date)</th>
+                      <th class="col-status">Current Status</th>
+                      <th class="col-pct">%</th>
+                      <th class="col-otd">OTD Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of data.poLineItems"
+                        >
+                      <td>{{ item.poLine }}</td>
+                      <td>{{ item.unitNo }}</td>
+                      <td>{{ item.itemDescription }}</td>
+                      <td>{{ item.erpPoNeedDate }}</td>
+                      <td [class.cell-late]="item.isLate">{{ item.promiseDate }}</td>
+                      <td>{{ item.currentStatus }}</td>
+                      <td>{{ item.percent }}%</td>
+                      <td [class.cell-late]="item.isLate">                        
+                          {{ item.otdStatus }}                        
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+
+              <!-- RIGHT: Engineering / Quality Document list -->
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="7" class="panel-title-cell">Engineering / Quality Document Submission list</th></tr>
+                    <tr class="data-thead">
+                      <th>Document No.</th>
+                      <th>Current Revision No.</th>
+                      <th>Title</th>
+                      <th>Panel ty/LD</th>
+                      <th>First Submission Due Date</th>
+                      <th>Actual Submission Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let doc of data.engineeringDocs; let i = index"
+                        [class.row-alt]="i % 2 !== 0">
+                      <td>{{ doc.documentNo }}</td>
+                      <td class="center">{{ doc.currentRevisionNo }}</td>
+                      <td>{{ doc.title }}</td>
+                      <td class="center">{{ doc.panelLd }}</td>
+                      <td>{{ doc.firstSubmissionDueDate }}</td>
+                      <td>{{ doc.actualSubmissionDate }}</td>
+                      <td>{{ doc.status }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table><!-- /layout-table page 1 -->
+
+        </div><!-- /page 1 -->
+      </td></tr>
+
+      <!-- ════════════════════════════════════════════════════════════════
            PAGE 3 — Attachment  (Schedule + Photo Report)
-      ══════════════════════════════════════════════════════════════ -->
-      <tr><td>
+      ════════════════════════════════════════════════════════════════ -->
+      <tr><td colspan="2">
         <div class="page-section">
-
-          <!-- sentinel -->
           <div class="page-sentinel" id="page-attachment" data-page-id="page-attachment"></div>
-
           <div class="page-subtitle">{{ pages[2].title }}</div>
-          <div class="two-col-layout">
 
-            <!-- Schedule + Other -->
-            <div class="panel">
-              <div class="panel-title">Schedule</div>
-              <div class="attachment-placeholder">
-                <span>Gantt / Schedule chart inserted here</span>
-              </div>
-              <div class="panel-title" style="margin-top:8px">Other</div>
-              <div class="attachment-placeholder small">
-                <span>Additional notes / attachments</span>
-              </div>
-            </div>
+          <table class="layout-table">
+            <tr>
+              <!-- Schedule + Other -->
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th class="panel-title-cell">Schedule</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="attachment-cell">Gantt / Schedule chart inserted here</td></tr>
+                  </tbody>
+                </table>
+                <table class="panel-table" style="margin-top:8px">
+                  <thead>
+                    <tr><th class="panel-title-cell">Other</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td class="attachment-cell small-att">Additional notes / attachments</td></tr>
+                  </tbody>
+                </table>
+              </td>
 
-            <!-- Photo Report -->
-            <div class="panel">
-              <div class="panel-title">Photo Report</div>
-              <div class="photo-grid">
-                <div class="photo-cell"
-                     *ngFor="let p of [
-                       {line:'20',      date:'16-Jun-25', activity:'Fabrication', desc:'4100 duct final paint'},
-                       {line:'Various', date:'16-Jun-25', activity:'Fabrication', desc:'3200 module at blast'},
-                       {line:'Various', date:'16-Jun-25', activity:'Assembly',    desc:'3100 insulated & lined'},
-                       {line:'Various', date:'16-Jun-25', activity:'Fabrication', desc:'Duct in line for blast'}
-                     ]">
-                  <div class="photo-meta">
-                    <span><strong>PO-Line:</strong> {{ p.line }}</span>
-                    <span>{{ p.date }}</span>
-                    <span><strong>Activity:</strong> {{ p.activity }}</span>
-                  </div>
-                  <div class="photo-frame">
-                    <span>{{ p.desc }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <!-- Photo Report -->
+              <td class="layout-cell" style="width:50%">
+                <table class="panel-table">
+                  <thead>
+                    <tr><th colspan="2" class="panel-title-cell">Photo Report</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="photo-outer-cell">
+                        <!-- 2×2 photo grid as inner table -->
+                        <table class="photo-layout-table">
+                          <tr *ngFor="let row of [[
+                            {line:'20',      date:'16-Jun-25', activity:'Fabrication', desc:'4100 duct final paint'},
+                            {line:'Various', date:'16-Jun-25', activity:'Fabrication', desc:'3200 module at blast'}
+                          ],[
+                            {line:'Various', date:'16-Jun-25', activity:'Assembly',    desc:'3100 insulated & lined'},
+                            {line:'Various', date:'16-Jun-25', activity:'Fabrication', desc:'Duct in line for blast'}
+                          ]]">
+                            <td class="photo-cell" *ngFor="let p of row">
+                              <table class="photo-meta-table">
+                                <tr>
+                                  <td class="photo-meta-cell"><strong>PO-Line:</strong> {{ p.line }}</td>
+                                  <td class="photo-meta-cell">{{ p.date }}</td>
+                                  <td class="photo-meta-cell"><strong>Activity:</strong> {{ p.activity }}</td>
+                                </tr>
+                              </table>
+                              <div class="photo-frame">{{ p.desc }}</div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table><!-- /layout-table page 3 -->
 
-          </div>
         </div><!-- /page 3 -->
       </td></tr>
 
