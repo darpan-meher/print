@@ -1,9 +1,11 @@
+// ── SPR Version info ──────────────────────────────────────────────────────────
 export interface SprVersion {
   revNo: string;
   reference: string;
   date: string;
 }
 
+// ── Page 1: PO-Line Progress ──────────────────────────────────────────────────
 export interface PoLineItem {
   poLine: number;
   unitNo: string;
@@ -16,6 +18,7 @@ export interface PoLineItem {
   isLate?: boolean;
 }
 
+// ── Page 1: Engineering / Quality Document Submission list ───────────────────
 export interface EngineeringDoc {
   documentNo: string;
   currentRevisionNo: number;
@@ -26,6 +29,7 @@ export interface EngineeringDoc {
   status: 'Closed' | 'Open';
 }
 
+// ── Page 2: Overall Progress ──────────────────────────────────────────────────
 export interface OverallProgress {
   category: string;
   baselineStart: string;
@@ -36,6 +40,7 @@ export interface OverallProgress {
   reportedPercent: number;
 }
 
+// ── Page 2: Contract and Changes ──────────────────────────────────────────────
 export interface ContractChange {
   no: number;
   category: string;
@@ -46,6 +51,7 @@ export interface ContractChange {
   poLines: string;
 }
 
+// ── Page 2: GEV / End Customer Witness Points ─────────────────────────────────
 export interface InspectionPoint {
   inspectionPoint: string;
   planned: string;
@@ -54,6 +60,7 @@ export interface InspectionPoint {
   status: string;
 }
 
+// ── Page 2: Purchasing / Subcontracting ───────────────────────────────────────
 export interface SubSupplier {
   item: string;
   subSupplier: string;
@@ -64,6 +71,7 @@ export interface SubSupplier {
   comments: string;
 }
 
+// ── Page 2: GEV Review ────────────────────────────────────────────────────────
 export interface GevReview {
   no: number;
   date: string;
@@ -71,12 +79,14 @@ export interface GevReview {
   resp: string;
 }
 
+// ── Page 2: Area of Concern ───────────────────────────────────────────────────
 export interface AreaOfConcern {
   no: number;
   category: string;
   issueDescription: string;
 }
 
+// ── Page 2: Key Actions ───────────────────────────────────────────────────────
 export interface KeyAction {
   no: number;
   date: string;
@@ -87,6 +97,7 @@ export interface KeyAction {
   status: string;
 }
 
+// ── Root data object ──────────────────────────────────────────────────────────
 export interface SprData {
   version: SprVersion;
   supplier: string;

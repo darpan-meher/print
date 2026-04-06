@@ -4,10 +4,9 @@ import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { SprComponent } from './spr/spr.component';
 import { SprDataService } from './spr/spr-data.service';
-import { PageHeaderComponent } from './spr/components/page-header/page-header.component';
 
 @NgModule({
-  declarations: [AppComponent, SprComponent, PageHeaderComponent],
+  declarations: [AppComponent, SprComponent],
   imports: [BrowserModule, CommonModule],
   providers: [SprDataService],
   bootstrap: [AppComponent]

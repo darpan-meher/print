@@ -3,14 +3,22 @@ import { SprData } from './models/spr.model';
 
 @Injectable({ providedIn: 'root' })
 export class SprDataService {
+
   getData(): SprData {
     return {
+      // ── Header meta ────────────────────────────────────────────────────
       version: { revNo: '08', reference: '2025-June', date: '13-Jun-25' },
-      supplier: '10780000 -Sisu Energy & Environmental, LLC - TULSA-OK-USA',
-      project: 'IPS - Project name - Project country',
-      gevPo: '4102574305',
-      supplierPo: 'XXXXXXXXXXX',
-      supplierSummary: "Stack anchor bolt templates for all 16 units complete in WMSA; possibly ship in September. Fabrication in process on unit #'s 1-12 (various stages of production). Will start coordinating final inspections of completed units in August. May try to batch several units together to minimize travel for inspections.",
+      supplier:    '10780000 -Sisu Energy & Environmental, LLC - TULSA-OK-USA',
+      project:     'IPS - Project name - Project country',
+      gevPo:       '4102574305',
+      supplierPo:  'XXXXXXXXXXX',
+      supplierSummary:
+        "Stack anchor bolt templates for all 16 units complete in WMSA; possibly ship in September. " +
+        "Fabrication in process on unit #'s 1-12 (various stages of production). Will start coordinating " +
+        "final inspections of completed units in August. May try to batch several units together to minimize " +
+        "travel for inspections.",
+
+      // ── PO-Line items (Page 1 left panel) ──────────────────────────────
       poLineItems: [
         { poLine: 20,  unitNo: 'Units 1-8',  itemDescription: 'Upper & Lower Stac', erpPoNeedDate: '1-May-25',  promiseDate: '1-Apr-25',  currentStatus: 'RTS Declared',  percent: 100, otdStatus: 'Actual OT' },
         { poLine: 30,  unitNo: 'Units 9-16', itemDescription: 'Upper & Lower Stac', erpPoNeedDate: '1-Jul-25',  promiseDate: '1-May-25',  currentStatus: 'RTS Declared',  percent: 100, otdStatus: 'Actual OT' },
@@ -46,45 +54,75 @@ export class SprDataService {
         { poLine: 330, unitNo: '5',          itemDescription: 'Filters/Silencers',  erpPoNeedDate: '1-Dec-25',  promiseDate: '1-Dec-25',  currentStatus: 'Manufacturing', percent: 10,  otdStatus: 'Forecast OT' },
         { poLine: 340, unitNo: '6',          itemDescription: 'Gas Path Ducts',     erpPoNeedDate: '15-Dec-25', promiseDate: '15-Dec-25', currentStatus: 'Manufacturing', percent: 25,  otdStatus: 'Forecast OT' },
       ],
+
+      // ── Engineering docs (Page 1 right panel) ──────────────────────────
       engineeringDocs: [
-        { documentNo: '24016-0001A', currentRevisionNo: 3, title: 'General Arrangement', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
-        { documentNo: '24016-0002A', currentRevisionNo: 2, title: 'General Arrangement', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '10-Feb-25', status: 'Closed' },
-        { documentNo: '24016-0003A', currentRevisionNo: 3, title: 'General Arrangement', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
-        { documentNo: '24016-0004',  currentRevisionNo: 2, title: 'General Arrangement', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
-        { documentNo: '24016-0006',  currentRevisionNo: 1, title: 'General Arrangement', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '11-Feb-25', status: 'Closed' },
-        { documentNo: '24016-0010',  currentRevisionNo: 0, title: 'Foundation Loading Plan', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Oct-24', status: 'Closed' },
-        { documentNo: '24016-0013',  currentRevisionNo: 1, title: 'Foundation Installation', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '13-Dec-34', status: 'Closed' },
-        { documentNo: '24016-0020',  currentRevisionNo: 0, title: 'Piping & Instrument Dia', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '10-Oct-24', status: 'Open' },
-        { documentNo: '24016-0021A', currentRevisionNo: 2, title: 'Simple Cycle, Emission', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Jan-25', status: 'Open' },
-        { documentNo: '24016-0022A', currentRevisionNo: 1, title: 'Ammonia Metering Rack', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Jan-25', status: 'Open' },
+        { documentNo: '24016-0001A', currentRevisionNo: 3, title: 'General Arrangement',    panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
+        { documentNo: '24016-0002A', currentRevisionNo: 2, title: 'General Arrangement',    panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '10-Feb-25', status: 'Closed' },
+        { documentNo: '24016-0003A', currentRevisionNo: 3, title: 'General Arrangement',    panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
+        { documentNo: '24016-0004',  currentRevisionNo: 2, title: 'General Arrangement',    panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '2-Jun-25',  status: 'Closed' },
+        { documentNo: '24016-0006',  currentRevisionNo: 1, title: 'General Arrangement',    panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '11-Feb-25', status: 'Closed' },
+        { documentNo: '24016-0010',  currentRevisionNo: 0, title: 'Foundation Loading Plan',panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Oct-24', status: 'Closed' },
+        { documentNo: '24016-0013',  currentRevisionNo: 1, title: 'Foundation Installation',panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '13-Dec-34', status: 'Closed' },
+        { documentNo: '24016-0020',  currentRevisionNo: 0, title: 'Piping & Instrument Dia',panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '10-Oct-24', status: 'Open'   },
+        { documentNo: '24016-0021A', currentRevisionNo: 2, title: 'Simple Cycle, Emission', panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Jan-25', status: 'Open'   },
+        { documentNo: '24016-0022A', currentRevisionNo: 1, title: 'Ammonia Metering Rack',  panelLd: 'No', firstSubmissionDueDate: '30-Jul-24', actualSubmissionDate: '28-Jan-25', status: 'Open'   },
       ],
+
+      // ── Overall Progress (Page 2) ───────────────────────────────────────
       overallProgress: [
         { category: 'Engineering',              baselineStart: '18-Jun-24', baselineFinish: '1-May-25',  forecastStart: '18-Jun-24', forecastFinish: '1-May-25',  weightage: 10,   reportedPercent: 100 },
         { category: 'Material / Procurement',   baselineStart: '21-Aug-24', baselineFinish: '1-May-25',  forecastStart: '21-Aug-24', forecastFinish: '1-May-25',  weightage: 30,   reportedPercent: 100 },
-        { category: 'Mfg / Fab / Assembly 25%', baselineStart: '15-Jan-25', baselineFinish: '4-Nov-25',  forecastStart: '15-Jan-25', forecastFinish: '4-Nov-25',  weightage: 12.5, reportedPercent: 31 },
-        { category: 'Mfg / Fab / Assembly 50%', baselineStart: '9-Apr-25',  baselineFinish: '20-Jan-26', forecastStart: '9-Apr-25',  forecastFinish: '20-Jan-26', weightage: 12.5, reportedPercent: 8 },
-        { category: 'Mfg / Fab / Assembly 75%', baselineStart: '4-Jun-25',  baselineFinish: '7-Jul-26',  forecastStart: '4-Jun-25',  forecastFinish: '7-Jul-26',  weightage: 12.5, reportedPercent: 2 },
-        { category: 'Mfg / Fab / Assembly 100%',baselineStart: '30-Jul-25', baselineFinish: '1-Sep-26',  forecastStart: '30-Jul-25', forecastFinish: '1-Sep-26',  weightage: 12.5, reportedPercent: 0 },
-        { category: 'Testing',                  baselineStart: '15-Sep-25', baselineFinish: '11-Sep-26', forecastStart: '15-Sep-25', forecastFinish: '11-Sep-26', weightage: 5,    reportedPercent: 0 },
-        { category: 'Packing / Dispatch',        baselineStart: '22-Sep-25', baselineFinish: '15-Sep-26', forecastStart: '22-Sep-25', forecastFinish: '15-Sep-26', weightage: 5,    reportedPercent: 0 },
+        { category: 'Mfg / Fab / Assembly 25%', baselineStart: '15-Jan-25', baselineFinish: '4-Nov-25',  forecastStart: '15-Jan-25', forecastFinish: '4-Nov-25',  weightage: 12.5, reportedPercent: 31  },
+        { category: 'Mfg / Fab / Assembly 50%', baselineStart: '9-Apr-25',  baselineFinish: '20-Jan-26', forecastStart: '9-Apr-25',  forecastFinish: '20-Jan-26', weightage: 12.5, reportedPercent: 8   },
+        { category: 'Mfg / Fab / Assembly 75%', baselineStart: '4-Jun-25',  baselineFinish: '7-Jul-26',  forecastStart: '4-Jun-25',  forecastFinish: '7-Jul-26',  weightage: 12.5, reportedPercent: 2   },
+        { category: 'Mfg / Fab / Assembly 100%',baselineStart: '30-Jul-25', baselineFinish: '1-Sep-26',  forecastStart: '30-Jul-25', forecastFinish: '1-Sep-26',  weightage: 12.5, reportedPercent: 0   },
+        { category: 'Testing',                  baselineStart: '15-Sep-25', baselineFinish: '11-Sep-26', forecastStart: '15-Sep-25', forecastFinish: '11-Sep-26', weightage: 5,    reportedPercent: 0   },
+        { category: 'Packing / Dispatch',        baselineStart: '22-Sep-25', baselineFinish: '15-Sep-26', forecastStart: '22-Sep-25', forecastFinish: '15-Sep-26', weightage: 5,    reportedPercent: 0   },
       ],
       totalPoProgress: 45,
+
+      // ── Contract & Changes (Page 2) ─────────────────────────────────────
       contractChanges: [
-        { no: 1, category: 'GEV request for changing delivery date', referenceDoc: 'ICO xxxxxxx', requestReceiveDate: '19/Feb/2025', impact: 'Schedule / Delivery', issueDescription: 'Change order submitted on 2/19 for change in catalyst RTS dates. (cost for storage and/or production changes at each catalyst mfg.)', poLines: '60; 70; 120; 130; —' }
+        {
+          no: 1,
+          category: 'GEV request for changing delivery date',
+          referenceDoc: 'ICO xxxxxxx',
+          requestReceiveDate: '19/Feb/2025',
+          impact: 'Schedule / Delivery',
+          issueDescription: 'Change order submitted on 2/19 for change in catalyst RTS dates. (cost for storage and/or production changes at each catalyst mfg.)',
+          poLines: '60; 70; 120; 130; —'
+        }
       ],
+
+      // ── Inspection Points (Page 2) ──────────────────────────────────────
       inspectionPoints: [
-        { inspectionPoint: 'Final Insp. Unit #1 (**tentative**)', planned: '15-Sep-25', actual: '15-Sep-25', attendance: 'GEV SQE / End Customer', status: 'Provide 20 days notice per inspection' }
+        {
+          inspectionPoint: 'Final Insp.\nUnit #1\n(**tentative**)',
+          planned:    '15-Sep-25',
+          actual:     '15-Sep-25',
+          attendance: 'GEV SQE\nEnd Customer',
+          status:     'Provide 20 days notice per inspection'
+        }
       ],
+
+      // ── Sub-suppliers (Page 2) ──────────────────────────────────────────
       subSuppliers: [
         { item: "Stacks/L&P's", subSupplier: 'Fox Equip.', orderDatePlanned: '18-Jun-24', orderDateActual: '1-May-25',  deliveryDatePlanned: '', deliveryDateActual: '', comments: 'See production schedule' },
         { item: 'Ducts/Modules', subSupplier: 'Elite',     orderDatePlanned: '21-Aug-24', orderDateActual: '21-Aug-24', deliveryDatePlanned: '', deliveryDateActual: '', comments: '' },
       ],
+
+      // ── GEV Review (Page 2) ─────────────────────────────────────────────
       gevReviews: [
         { no: 1, date: '13-Jun-25', comment: 'MPR-June version approved without comment', resp: 'Raphael Bellini' }
       ],
+
+      // ── Area of Concern (Page 2) ────────────────────────────────────────
       areasOfConcern: [
         { no: 1, category: 'Logistics', issueDescription: 'GE to provide info on schedule slippage (if necessary) so shops can plan production or prepare for storage options.' }
       ],
+
+      // ── Key Actions (Page 2) ────────────────────────────────────────────
       keyActions: [
         { no: 1, date: '19-Feb-25', category: 'Commercial', actionDescription: "Amend PO-lines' CDD for Catalysts", targetDate: '25-Jun-25', resp: 'Grant Quesnell', status: 'Open' }
       ]
