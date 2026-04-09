@@ -1,0 +1,367 @@
+// ── Variables ────────────────────────────────────────────────────────────────
+$ge-blue:     #1760a5;
+$ge-dark:     #1e3a5f;
+$sisu-red:    #cc2222;
+$border:      #d0d5dd;
+$panel-head:  #c6d4e8;
+$row-alt:     #f0f4fa;
+$row-late:    #fff3b0;
+$row-open:    #fef9ec;
+$text:        #1a1a1a;
+$muted:       #6b7280;
+$error:       #dc2626;
+$success:     #16a34a;
+$input-bg:    #ffffff;
+$input-focus: #e8f0fb;
+
+// ════════════════════════════════════════════════════════════════════════════
+//  SHELL & TOP BAR
+// ════════════════════════════════════════════════════════════════════════════
+.form-shell {
+  background: #f1f4f9;
+  min-height: 100vh;
+}
+
+.form-topbar {
+  width: 100%;
+  border-collapse: collapse;
+  background: $ge-dark;
+  color: white;
+
+  td { padding: 12px 20px; vertical-align: middle; }
+
+  .topbar-brand {
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    width: 1%;
+
+    .brand-ge   { color: #7eb3f0; }
+    .brand-sep  { color: rgba(255,255,255,.4); margin: 0 6px; }
+    .brand-sisu { color: #f08080; }
+  }
+
+  .topbar-title {
+    font-size: 13px;
+    opacity: .8;
+  }
+
+  .topbar-actions {
+    text-align: right;
+    white-space: nowrap;
+    width: 1%;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  BODY LAYOUT TABLE  (nav | content)
+// ════════════════════════════════════════════════════════════════════════════
+.form-body-layout {
+  width: 100%;
+  border-collapse: collapse;
+  vertical-align: top;
+}
+
+// ── Left nav column ───────────────────────────────────────────────────────────
+.nav-col {
+  width: 185px;
+  min-width: 185px;
+  vertical-align: top;
+  background: #fff;
+  border-right: 1px solid $border;
+  padding: 0;
+}
+
+.section-nav {
+  width: 100%;
+  border-collapse: collapse;
+
+  .nav-item {
+    padding: 11px 18px;
+    font-size: 12px;
+    color: $muted;
+    cursor: pointer;
+    border-bottom: 1px solid #eef0f3;
+    white-space: nowrap;
+    user-select: none;
+    transition: background .12s, color .12s;
+
+    &:hover     { background: #f0f4fb; color: $ge-blue; }
+    &.nav-active {
+      background: $ge-blue;
+      color: white;
+      font-weight: 600;
+      border-left: 3px solid $sisu-red;
+    }
+  }
+}
+
+// ── Right content column ──────────────────────────────────────────────────────
+.content-col {
+  vertical-align: top;
+  padding: 20px 24px;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  SECTION PANELS
+// ════════════════════════════════════════════════════════════════════════════
+.section-panel    { display: block; }
+.section-hidden   { display: none; }
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: $ge-dark;
+  padding-bottom: 8px;
+  border-bottom: 2px solid $ge-blue;
+  margin-bottom: 14px;
+  letter-spacing: .02em;
+}
+
+.subsection-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin: 14px 0 6px;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  FIELD TABLE  (header info, simple key-value rows)
+// ════════════════════════════════════════════════════════════════════════════
+.field-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 4px;
+
+  thead th {
+    padding: 6px 8px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $muted;
+    text-align: left;
+    border-bottom: 1px solid $border;
+  }
+
+  tbody td {
+    padding: 4px 6px 8px;
+    vertical-align: top;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  DATA ENTRY TABLE  (FormArray rows)
+// ════════════════════════════════════════════════════════════════════════════
+.data-entry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 4px;
+
+  // Column header row
+  thead tr:first-child th {
+    background: $ge-blue;
+    color: white;
+    padding: 7px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: left;
+    border-right: 1px solid rgba(255,255,255,.2);
+    white-space: nowrap;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  // Data rows
+  tbody tr {
+    border-bottom: 1px solid $border;
+    transition: background .1s;
+
+    &:hover    { background: #f5f8fd; }
+    &.row-alt  { background: $row-alt; }
+    &.row-late { background: $row-late; }
+    &.row-open { background: $row-open; }
+
+    td { padding: 4px 5px; vertical-align: middle; }
+  }
+
+  // Footer (add row)
+  tfoot {
+    .tfoot-add { padding: 8px 6px; background: #f8fafc; border-top: 2px solid $border; }
+  }
+}
+
+// Fixed-width utility columns
+.th-idx { width: 32px; }
+.th-del { width: 32px; }
+.td-idx { text-align: center; color: $muted; font-size: 11px; font-weight: 600; }
+.td-del { text-align: center; }
+.td-center { text-align: center; }
+.td-empty  { text-align: center; padding: 20px; color: $muted; font-style: italic; }
+
+// ════════════════════════════════════════════════════════════════════════════
+//  FORM CONTROLS
+// ════════════════════════════════════════════════════════════════════════════
+.f-input {
+  width: 100%;
+  padding: 5px 7px;
+  font-size: 11px;
+  border: 1px solid $border;
+  border-radius: 3px;
+  background: $input-bg;
+  color: $text;
+  box-sizing: border-box;
+  transition: border-color .15s, background .15s;
+
+  &:focus {
+    outline: none;
+    border-color: $ge-blue;
+    background: $input-focus;
+  }
+
+  &.f-error { border-color: $error; background: #fef2f2; }
+  &.f-sm    { width: 64px; }
+  &.f-pct   { width: 58px; }
+  &.f-date  { width: 98px; }
+  &.w-full  { width: 100%; }
+}
+
+.f-select {
+  width: 100%;
+  padding: 5px 4px;
+  font-size: 11px;
+  border: 1px solid $border;
+  border-radius: 3px;
+  background: $input-bg;
+  color: $text;
+  cursor: pointer;
+
+  &:focus { outline: none; border-color: $ge-blue; }
+  &.f-error   { border-color: $error; }
+  &.sel-late  { background: #fef3c7; color: #92400e; font-weight: 600; }
+  &.sel-closed{ background: #d1fae5; color: #065f46; font-weight: 600; }
+  &.f-otd     { min-width: 110px; }
+}
+
+.f-textarea {
+  width: 100%;
+  padding: 5px 7px;
+  font-size: 11px;
+  border: 1px solid $border;
+  border-radius: 3px;
+  background: $input-bg;
+  color: $text;
+  resize: vertical;
+  box-sizing: border-box;
+
+  &:focus { outline: none; border-color: $ge-blue; background: $input-focus; }
+  &.f-sm-ta { min-height: 44px; }
+}
+
+.f-check {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: $ge-blue;
+}
+
+// Required marker
+.req { color: $error; font-size: 10px; }
+
+// Validation message
+.err-msg {
+  font-size: 10px;
+  color: $error;
+  margin-top: 2px;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  BUTTONS
+// ════════════════════════════════════════════════════════════════════════════
+.btn {
+  padding: 8px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background .15s, transform .1s;
+  margin-left: 8px;
+
+  &:active { transform: scale(.97); }
+
+  &.btn-submit {
+    background: $ge-blue;
+    color: white;
+    &:hover { background: darken($ge-blue, 8%); }
+  }
+
+  &.btn-reset {
+    background: white;
+    color: $ge-dark;
+    border: 1px solid $border;
+    &:hover { background: #f0f4fa; }
+  }
+
+  &.btn-add {
+    background: #e8f0fb;
+    color: $ge-blue;
+    border: 1px solid $panel-head;
+    font-size: 12px;
+    padding: 6px 14px;
+    margin-left: 0;
+    &:hover { background: $panel-head; }
+  }
+}
+
+.btn-del {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: background .12s;
+  &:hover { background: #fee2e2; }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  BOTTOM BAR & NOTICES
+// ════════════════════════════════════════════════════════════════════════════
+.bottom-bar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-top: 2px solid $border;
+  padding-top: 12px;
+
+  td { padding: 12px 4px; vertical-align: middle; }
+  .bar-info { width: 100%; }
+  .bar-btns { white-space: nowrap; text-align: right; }
+}
+
+.validation-msg {
+  font-size: 12px;
+  color: $error;
+  font-weight: 600;
+}
+
+.success-msg {
+  font-size: 12px;
+  color: $success;
+  font-weight: 600;
+}
+
+.empty-notice {
+  font-size: 12px;
+  color: $muted;
+  background: #f8fafc;
+  border: 1px solid $border;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-style: italic;
+}

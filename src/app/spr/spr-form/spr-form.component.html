@@ -1,0 +1,656 @@
+<!-- ══════════════════════════════════════════════════════════════════
+     SPR FORM — Angular 15 Reactive Form with FormBuilder
+     All row-based data uses FormArray; layout uses <table>
+══════════════════════════════════════════════════════════════════════ -->
+
+<div class="form-shell">
+
+  <!-- ── Top header bar ──────────────────────────────────────────── -->
+  <table class="form-topbar">
+    <tr>
+      <td class="topbar-brand">
+        <span class="brand-ge">GE Vernova</span>
+        <span class="brand-sep">×</span>
+        <span class="brand-sisu">SISU</span>
+      </td>
+      <td class="topbar-title">Supplier Progress Report — Data Entry Form</td>
+      <td class="topbar-actions">
+        <button type="button" class="btn btn-reset" (click)="onReset()">Reset</button>
+        <button type="button" class="btn btn-submit" (click)="onSubmit()">Save SPR</button>
+      </td>
+    </tr>
+  </table>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <table class="form-body-layout">
+      <tr>
+
+        <!-- ── LEFT: Section nav ─────────────────────────────────── -->
+        <td class="nav-col">
+          <table class="section-nav">
+            <tr *ngFor="let sec of sections">
+              <td class="nav-item"
+                  [class.nav-active]="activeSection === sec.id"
+                  (click)="setSection(sec.id)">
+                {{ sec.label }}
+              </td>
+            </tr>
+          </table>
+        </td>
+
+        <!-- ── RIGHT: Active section content ─────────────────────── -->
+        <td class="content-col">
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: SPR Header
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'header'">
+            <div class="section-title">SPR Header</div>
+
+            <!-- Version sub-group -->
+            <div class="subsection-title">SPR Version</div>
+            <table class="field-table" formGroupName="version">
+              <thead>
+                <tr>
+                  <th>Rev. No <span class="req">*</span></th>
+                  <th>Reference <span class="req">*</span></th>
+                  <th>Date <span class="req">*</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input class="f-input" formControlName="revNo" placeholder="e.g. 08"
+                           [class.f-error]="isInvalid(ctrl('version.revNo'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('version.revNo'))">Required</div>
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="reference" placeholder="e.g. 2025-June"
+                           [class.f-error]="isInvalid(ctrl('version.reference'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('version.reference'))">Required</div>
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="date" placeholder="e.g. 13-Jun-25"
+                           [class.f-error]="isInvalid(ctrl('version.date'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('version.date'))">Required</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Supplier meta -->
+            <div class="subsection-title">Supplier Information</div>
+            <table class="field-table">
+              <thead>
+                <tr>
+                  <th colspan="2">Supplier <span class="req">*</span></th>
+                  <th>Project <span class="req">*</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="2">
+                    <input class="f-input w-full" formControlName="supplier"
+                           [class.f-error]="isInvalid(ctrl('supplier'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('supplier'))">Required</div>
+                  </td>
+                  <td>
+                    <input class="f-input w-full" formControlName="project"
+                           [class.f-error]="isInvalid(ctrl('project'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('project'))">Required</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table class="field-table">
+              <thead>
+                <tr>
+                  <th>GEV PO <span class="req">*</span></th>
+                  <th>Supplier PO <span class="req">*</span></th>
+                  <th>Total PO Progress % <span class="req">*</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <input class="f-input" formControlName="gevPo"
+                           [class.f-error]="isInvalid(ctrl('gevPo'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('gevPo'))">Required</div>
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="supplierPo"
+                           [class.f-error]="isInvalid(ctrl('supplierPo'))">
+                    <div class="err-msg" *ngIf="isInvalid(ctrl('supplierPo'))">Required</div>
+                  </td>
+                  <td>
+                    <input class="f-input" type="number" min="0" max="100" formControlName="totalPoProgress">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Supplier summary -->
+            <div class="subsection-title">Supplier Summary</div>
+            <table class="field-table">
+              <tbody>
+                <tr>
+                  <td>
+                    <textarea class="f-textarea" formControlName="supplierSummary" rows="4"
+                              placeholder="Describe current fabrication status..."></textarea>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: PO-Line Progress
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'poLines'">
+            <div class="section-title">PO-Line Progress</div>
+
+            <table class="data-entry-table" formArrayName="poLineItems">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>PO-Line <span class="req">*</span></th>
+                  <th>Unit # <span class="req">*</span></th>
+                  <th>Item Description <span class="req">*</span></th>
+                  <th>ERP PO Need Date</th>
+                  <th>Promise Date</th>
+                  <th>Current Status</th>
+                  <th>%</th>
+                  <th>OTD Status</th>
+                  <th>Is Late?</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of poLineItems.controls; let i = index"
+                    [formGroupName]="i"
+                    [class.row-late]="row.get('isLate')?.value">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="poLine" type="number"
+                           [class.f-error]="isInvalid(rowGroup(poLineItems,i).get('poLine'))">
+                  </td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="unitNo"
+                           [class.f-error]="isInvalid(rowGroup(poLineItems,i).get('unitNo'))">
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="itemDescription"
+                           [class.f-error]="isInvalid(rowGroup(poLineItems,i).get('itemDescription'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="erpPoNeedDate" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="promiseDate"   placeholder="DD-Mon-YY"></td>
+                  <td>
+                    <select class="f-select" formControlName="currentStatus">
+                      <option value="RTS Declared">RTS Declared</option>
+                      <option value="Manufacturing">Manufacturing</option>
+                      <option value="Procurement">Procurement</option>
+                      <option value="Assembly">Assembly</option>
+                      <option value="Testing">Testing</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                  </td>
+                  <td><input class="f-input f-pct" formControlName="percent" type="number" min="0" max="100"></td>
+                  <td>
+                    <select class="f-select f-otd" formControlName="otdStatus"
+                            [class.sel-late]="row.get('otdStatus')?.value === 'Forecasted Late'">
+                      <option *ngFor="let o of otdOptions" [value]="o">{{ o }}</option>
+                    </select>
+                  </td>
+                  <td class="td-center">
+                    <input type="checkbox" formControlName="isLate" class="f-check">
+                  </td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(poLineItems, i)" title="Remove">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="11" class="tfoot-add">
+                    <button type="button" class="btn btn-add" (click)="addPoLine()">+ Add Row</button>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Engineering / Quality Documents
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'engDocs'">
+            <div class="section-title">Engineering / Quality Document Submission List</div>
+
+            <table class="data-entry-table" formArrayName="engineeringDocs">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>Document No. <span class="req">*</span></th>
+                  <th>Current Rev. No.</th>
+                  <th>Title <span class="req">*</span></th>
+                  <th>Panel ty/LD</th>
+                  <th>First Sub. Due Date</th>
+                  <th>Actual Sub. Date</th>
+                  <th>Status</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of engineeringDocs.controls; let i = index"
+                    [formGroupName]="i">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input" formControlName="documentNo"
+                           [class.f-error]="isInvalid(rowGroup(engineeringDocs,i).get('documentNo'))">
+                  </td>
+                  <td><input class="f-input f-sm" formControlName="currentRevisionNo" type="number" min="0"></td>
+                  <td>
+                    <input class="f-input" formControlName="title"
+                           [class.f-error]="isInvalid(rowGroup(engineeringDocs,i).get('title'))">
+                  </td>
+                  <td>
+                    <select class="f-select" formControlName="panelLd">
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </td>
+                  <td><input class="f-input f-date" formControlName="firstSubmissionDueDate" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="actualSubmissionDate"   placeholder="DD-Mon-YY"></td>
+                  <td>
+                    <select class="f-select" formControlName="status"
+                            [class.sel-closed]="row.get('status')?.value === 'Closed'">
+                      <option *ngFor="let s of docStatuses" [value]="s">{{ s }}</option>
+                    </select>
+                  </td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(engineeringDocs, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addEngDoc()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Overall Progress
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'progress'">
+            <div class="section-title">Overall Progress</div>
+
+            <table class="data-entry-table" formArrayName="overallProgress">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>Category <span class="req">*</span></th>
+                  <th>Baseline Start</th>
+                  <th>Baseline Finish</th>
+                  <th>Forecast Start</th>
+                  <th>Forecast Finish</th>
+                  <th>Weightage %</th>
+                  <th>Reported %</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of overallProgress.controls; let i = index"
+                    [formGroupName]="i"
+                    [class.row-alt]="i % 2 !== 0">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input" formControlName="category"
+                           [class.f-error]="isInvalid(rowGroup(overallProgress,i).get('category'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="baselineStart"  placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="baselineFinish" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="forecastStart"  placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="forecastFinish" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-pct"  formControlName="weightage"       type="number" min="0" max="100" step="0.5"></td>
+                  <td><input class="f-input f-pct"  formControlName="reportedPercent" type="number" min="0" max="100"></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(overallProgress, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addProgress()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Contract & Changes
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'contracts'">
+            <div class="section-title">Contract and Changes</div>
+
+            <table class="data-entry-table" formArrayName="contractChanges">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>No. <span class="req">*</span></th>
+                  <th>Category <span class="req">*</span></th>
+                  <th>Reference Doc.</th>
+                  <th>Request Date</th>
+                  <th>Impact</th>
+                  <th>Issue / Concern Description</th>
+                  <th>PO-Lines</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of contractChanges.controls; let i = index"
+                    [formGroupName]="i">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="no" type="number"
+                           [class.f-error]="isInvalid(rowGroup(contractChanges,i).get('no'))">
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="category"
+                           [class.f-error]="isInvalid(rowGroup(contractChanges,i).get('category'))">
+                  </td>
+                  <td><input class="f-input" formControlName="referenceDoc"></td>
+                  <td><input class="f-input f-date" formControlName="requestReceiveDate" placeholder="DD/Mon/YYYY"></td>
+                  <td><input class="f-input" formControlName="impact"></td>
+                  <td><textarea class="f-textarea f-sm-ta" formControlName="issueDescription" rows="2"></textarea></td>
+                  <td><input class="f-input" formControlName="poLines" placeholder="e.g. 60; 70"></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(contractChanges, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addContract()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Witness Points
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'inspection'">
+            <div class="section-title">GEV / End Customer Witness Points</div>
+
+            <table class="data-entry-table" formArrayName="inspectionPoints">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>Inspection Point <span class="req">*</span></th>
+                  <th>Planned Date</th>
+                  <th>Actual Date</th>
+                  <th>Attendance</th>
+                  <th>Status</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of inspectionPoints.controls; let i = index"
+                    [formGroupName]="i">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input" formControlName="inspectionPoint"
+                           [class.f-error]="isInvalid(rowGroup(inspectionPoints,i).get('inspectionPoint'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="planned"  placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="actual"   placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input" formControlName="attendance"></td>
+                  <td><input class="f-input" formControlName="status"></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(inspectionPoints, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="7" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addInspection()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Sub-suppliers
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'subSupplier'">
+            <div class="section-title">Purchasing / Subcontracting — Main / Critical Sub-suppliers</div>
+
+            <table class="data-entry-table" formArrayName="subSuppliers">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>Item <span class="req">*</span></th>
+                  <th>Sub Supplier <span class="req">*</span></th>
+                  <th>Order Planned</th>
+                  <th>Order Actual</th>
+                  <th>Delivery Planned</th>
+                  <th>Delivery Actual</th>
+                  <th>Comments</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of subSuppliers.controls; let i = index"
+                    [formGroupName]="i"
+                    [class.row-alt]="i % 2 !== 0">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input" formControlName="item"
+                           [class.f-error]="isInvalid(rowGroup(subSuppliers,i).get('item'))">
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="subSupplier"
+                           [class.f-error]="isInvalid(rowGroup(subSuppliers,i).get('subSupplier'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="orderDatePlanned"    placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="orderDateActual"     placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="deliveryDatePlanned" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input f-date" formControlName="deliveryDateActual"  placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input" formControlName="comments"></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(subSuppliers, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addSubSupplier()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: NCR / Deviation (empty table with add)
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'ncr'">
+            <div class="section-title">Supplier Deviation Request / Non-Conformance Reports</div>
+            <div class="empty-notice">No NCR records. Use the table below to add entries.</div>
+            <table class="data-entry-table">
+              <thead>
+                <tr>
+                  <th>NCR-No.</th>
+                  <th>Detail of NC</th>
+                  <th>Disposition Status</th>
+                  <th>Target Closure Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="4" class="td-empty">— No records —</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: GEV Review
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'gevReview'">
+            <div class="section-title">GEV Review</div>
+
+            <table class="data-entry-table" formArrayName="gevReviews">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>No. <span class="req">*</span></th>
+                  <th>Date</th>
+                  <th>Comment</th>
+                  <th>Resp.</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of gevReviews.controls; let i = index"
+                    [formGroupName]="i">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="no" type="number"
+                           [class.f-error]="isInvalid(rowGroup(gevReviews,i).get('no'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="date" placeholder="DD-Mon-YY"></td>
+                  <td><textarea class="f-textarea f-sm-ta" formControlName="comment" rows="2"></textarea></td>
+                  <td><input class="f-input" formControlName="resp"></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(gevReviews, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="6" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addGevReview()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Area of Concern
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'concern'">
+            <div class="section-title">Area of Concern</div>
+
+            <table class="data-entry-table" formArrayName="areasOfConcern">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>No. <span class="req">*</span></th>
+                  <th>Category <span class="req">*</span></th>
+                  <th>Issue / Concern Description</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of areasOfConcern.controls; let i = index"
+                    [formGroupName]="i">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="no" type="number"
+                           [class.f-error]="isInvalid(rowGroup(areasOfConcern,i).get('no'))">
+                  </td>
+                  <td>
+                    <input class="f-input" formControlName="category"
+                           [class.f-error]="isInvalid(rowGroup(areasOfConcern,i).get('category'))">
+                  </td>
+                  <td><textarea class="f-textarea f-sm-ta" formControlName="issueDescription" rows="2"></textarea></td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(areasOfConcern, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="5" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addConcern()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Key Actions
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'keyActions'">
+            <div class="section-title">Key Actions</div>
+
+            <table class="data-entry-table" formArrayName="keyActions">
+              <thead>
+                <tr>
+                  <th class="th-idx">#</th>
+                  <th>No. <span class="req">*</span></th>
+                  <th>Date</th>
+                  <th>Category <span class="req">*</span></th>
+                  <th>Action Description</th>
+                  <th>Target Date</th>
+                  <th>Resp.</th>
+                  <th>Status</th>
+                  <th class="th-del"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of keyActions.controls; let i = index"
+                    [formGroupName]="i"
+                    [class.row-open]="row.get('status')?.value === 'Open'">
+                  <td class="td-idx">{{ i + 1 }}</td>
+                  <td>
+                    <input class="f-input f-sm" formControlName="no" type="number"
+                           [class.f-error]="isInvalid(rowGroup(keyActions,i).get('no'))">
+                  </td>
+                  <td><input class="f-input f-date" formControlName="date"       placeholder="DD-Mon-YY"></td>
+                  <td>
+                    <input class="f-input" formControlName="category"
+                           [class.f-error]="isInvalid(rowGroup(keyActions,i).get('category'))">
+                  </td>
+                  <td><textarea class="f-textarea f-sm-ta" formControlName="actionDescription" rows="2"></textarea></td>
+                  <td><input class="f-input f-date" formControlName="targetDate" placeholder="DD-Mon-YY"></td>
+                  <td><input class="f-input" formControlName="resp"></td>
+                  <td>
+                    <select class="f-select" formControlName="status">
+                      <option *ngFor="let s of statusOpts" [value]="s">{{ s }}</option>
+                    </select>
+                  </td>
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(keyActions, i)">✕</button>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9" class="tfoot-add">
+                  <button type="button" class="btn btn-add" (click)="addKeyAction()">+ Add Row</button>
+                </td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- ── Bottom action bar ────────────────────────────── -->
+          <table class="bottom-bar">
+            <tr>
+              <td class="bar-info">
+                <span *ngIf="form.invalid && submitted" class="validation-msg">
+                  ⚠ Please fix the highlighted fields before saving.
+                </span>
+                <span *ngIf="form.valid && submitted" class="success-msg">
+                  ✓ Form saved successfully.
+                </span>
+              </td>
+              <td class="bar-btns">
+                <button type="button" class="btn btn-reset" (click)="onReset()">Reset All</button>
+                <button type="button" class="btn btn-submit" (click)="onSubmit()">Save SPR</button>
+              </td>
+            </tr>
+          </table>
+
+        </td><!-- /content-col -->
+      </tr>
+    </table>
+  </form>
+</div>
