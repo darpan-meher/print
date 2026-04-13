@@ -21,7 +21,78 @@
     </tr>
   </table>
 
+  <!-- ── SPR Identity Strip (matches image: logo | SPR NO | REFERENCE | DATE) ── -->
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <table class="spr-identity-strip">
+      <tr>
+
+        <!-- Supplier Logo upload box -->
+        <td class="logo-cell">
+          <div class="logo-upload-box"
+               (click)="triggerLogoUpload()"
+               (dragover)="$event.preventDefault()"
+               (drop)="onLogoDrop($event)"
+               [class.logo-has-image]="logoPreviewUrl">
+            <input type="file"
+                   #logoFileInput
+                   accept="image/*"
+                   class="logo-file-input"
+                   (change)="onLogoSelected($event)">
+            <img *ngIf="logoPreviewUrl"
+                 [src]="logoPreviewUrl"
+                 class="logo-preview"
+                 alt="Supplier Logo">
+            <div *ngIf="!logoPreviewUrl" class="logo-placeholder">
+              <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="M21 15l-5-5L5 21"/>
+                </svg>
+              </div>
+              <span class="logo-label">SUPPLIER LOGO</span>
+              <span class="logo-hint">Click or drag to upload</span>
+            </div>
+          </div>
+          <button *ngIf="logoPreviewUrl"
+                  type="button"
+                  class="logo-remove-btn"
+                  (click)="removeLogo()">Remove</button>
+        </td>
+
+        <!-- SPR NO field -->
+        <td class="identity-field-cell" formGroupName="version">
+          <label class="identity-label">SPR NO:</label>
+          <input class="identity-input"
+                 formControlName="revNo"
+                 placeholder="XXXXXXXX"
+                 [class.identity-error]="isInvalid(ctrl('version.revNo'))">
+          <div class="identity-err" *ngIf="isInvalid(ctrl('version.revNo'))">Required</div>
+        </td>
+
+        <!-- REFERENCE field -->
+        <td class="identity-field-cell" formGroupName="version">
+          <label class="identity-label">REFERENCE:</label>
+          <input class="identity-input"
+                 formControlName="reference"
+                 placeholder="XXXXXXXX"
+                 [class.identity-error]="isInvalid(ctrl('version.reference'))">
+          <div class="identity-err" *ngIf="isInvalid(ctrl('version.reference'))">Required</div>
+        </td>
+
+        <!-- DATE field -->
+        <td class="identity-field-cell" formGroupName="version">
+          <label class="identity-label">DATE:</label>
+          <input class="identity-input"
+                 formControlName="date"
+                 placeholder="XXXXXXXX"
+                 [class.identity-error]="isInvalid(ctrl('version.date'))">
+          <div class="identity-err" *ngIf="isInvalid(ctrl('version.date'))">Required</div>
+        </td>
+
+      </tr>
+    </table>
+
     <table class="form-body-layout">
       <tr>
 

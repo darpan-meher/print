@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder, FormGroup, FormArray, Validators, AbstractControl
 } from '@angular/forms';
@@ -15,6 +15,12 @@ export class SprFormComponent implements OnInit {
   form!: FormGroup;
   activeSection = 'header';
   submitted = false;
+
+  // ── Supplier Logo ──────────────────────────────────────────────────────────
+  logoPreviewUrl: string | null = null;
+  logoFileName   = '';
+
+  @ViewChild('logoFileInput') logoFileInput!: ElementRef<HTMLInputElement>;
 
   readonly otdOptions  = ['Actual OT', 'Forecast OT', 'Forecasted Late'];
   readonly docStatuses = ['Closed', 'Open'];
@@ -237,6 +243,41 @@ export class SprFormComponent implements OnInit {
   // ── Navigation ─────────────────────────────────────────────────────────────
 
   setSection(id: string): void { this.activeSection = id; }
+
+  // ── Logo upload ────────────────────────────────────────────────────────────
+
+  triggerLogoUpload(): void {
+    this.logoFileInput.nativeElement.click();
+  }
+
+  onLogoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) { this.readLogoFile(file); }
+  }
+
+  onLogoDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file && file.type.startsWith('image/')) { this.readLogoFile(file); }
+  }
+
+  private readLogoFile(file: File): void {
+    this.logoFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.logoPreviewUrl = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeLogo(): void {
+    this.logoPreviewUrl = null;
+    this.logoFileName   = '';
+    if (this.logoFileInput) {
+      this.logoFileInput.nativeElement.value = '';
+    }
+  }
 
   // ── Submit ─────────────────────────────────────────────────────────────────
 
