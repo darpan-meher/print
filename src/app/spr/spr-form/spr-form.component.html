@@ -15,8 +15,9 @@
       </td>
       <td class="topbar-title">Supplier Progress Report — Data Entry Form</td>
       <td class="topbar-actions">
-        <button type="button" class="btn btn-reset" (click)="onReset()">Reset</button>
-        <button type="button" class="btn btn-submit" (click)="onSubmit()">Save SPR</button>
+        <button type="button" class="btn btn-topbar-draft" (click)="saveDraft()">💾 Save Draft</button>
+        <button type="button" class="btn btn-topbar-reset" (click)="onReset()">Reset</button>
+        <button type="button" class="btn btn-topbar-submit" (click)="openSubmitConfirm()">✓ Submit SPR</button>
       </td>
     </tr>
   </table>
@@ -544,23 +545,139 @@
           </div>
 
           <!-- ════════════════════════════════════════════════════
-               SECTION: NCR / Deviation (empty table with add)
+               SECTION: NCR / Deviation — full FormArray table
           ════════════════════════════════════════════════════ -->
           <div class="section-panel" [class.section-hidden]="activeSection !== 'ncr'">
             <div class="section-title">Supplier Deviation Request / Non-Conformance Reports</div>
-            <div class="empty-notice">No NCR records. Use the table below to add entries.</div>
-            <table class="data-entry-table">
+
+            <!-- Summary stats bar -->
+            <table class="ncr-stats-bar">
+              <tr>
+                <td class="ncr-stat-cell">
+                  <div class="ncr-stat-num">{{ ncrReports.length }}</div>
+                  <div class="ncr-stat-label">Total NCRs</div>
+                </td>
+                <td class="ncr-stat-cell ncr-stat-open">
+                  <div class="ncr-stat-num">
+                    {{ ncrReports.controls | ncrFilter:'Open' }}
+                  </div>
+                  <div class="ncr-stat-label">Open</div>
+                </td>
+                <td class="ncr-stat-cell ncr-stat-closed">
+                  <div class="ncr-stat-num">
+                    {{ ncrReports.controls | ncrFilter:'Closed' }}
+                  </div>
+                  <div class="ncr-stat-label">Closed</div>
+                </td>
+                <td class="ncr-stat-cell ncr-stat-critical">
+                  <div class="ncr-stat-num">
+                    {{ ncrReports.controls | ncrSeverityFilter:'Critical' }}
+                  </div>
+                  <div class="ncr-stat-label">Critical</div>
+                </td>
+                <td class="ncr-stat-spacer"></td>
+              </tr>
+            </table>
+
+            <!-- FormArray table -->
+            <table class="data-entry-table" formArrayName="ncrReports">
               <thead>
                 <tr>
-                  <th>NCR-No.</th>
-                  <th>Detail of NC</th>
-                  <th>Disposition Status</th>
-                  <th>Target Closure Date</th>
+                  <th class="th-idx">#</th>
+                  <th class="ncr-col-no">NCR No. <span class="req">*</span></th>
+                  <th class="ncr-col-po">PO-Line</th>
+                  <th class="ncr-col-severity">Severity</th>
+                  <th class="ncr-col-detail">Detail of NC <span class="req">*</span></th>
+                  <th class="ncr-col-desc">Description</th>
+                  <th class="ncr-col-raised">Raised By</th>
+                  <th class="ncr-col-date">Raised Date</th>
+                  <th class="ncr-col-disp">Disposition Status</th>
+                  <th class="ncr-col-close">Target Closure Date</th>
+                  <th class="th-del"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr><td colspan="4" class="td-empty">— No records —</td></tr>
+                <tr *ngFor="let row of ncrReports.controls; let i = index"
+                    [formGroupName]="i"
+                    [class.row-ncr-open]="rowGroup(ncrReports,i).get('dispositionStatus')?.value === 'Open'"
+                    [class.row-ncr-critical]="rowGroup(ncrReports,i).get('severity')?.value === 'Critical'">
+
+                  <td class="td-idx">{{ i + 1 }}</td>
+
+                  <td>
+                    <input class="f-input f-sm" formControlName="ncrNo"
+                           placeholder="NCR-001"
+                           [class.f-error]="isInvalid(rowGroup(ncrReports,i).get('ncrNo'))">
+                    <div class="err-msg" *ngIf="isInvalid(rowGroup(ncrReports,i).get('ncrNo'))">Required</div>
+                  </td>
+
+                  <td>
+                    <input class="f-input f-sm" formControlName="poLine" placeholder="e.g. 60">
+                  </td>
+
+                  <td>
+                    <select class="f-select ncr-severity-sel" formControlName="severity"
+                            [class.sev-minor]="rowGroup(ncrReports,i).get('severity')?.value === 'Minor'"
+                            [class.sev-major]="rowGroup(ncrReports,i).get('severity')?.value === 'Major'"
+                            [class.sev-critical]="rowGroup(ncrReports,i).get('severity')?.value === 'Critical'">
+                      <option *ngFor="let s of ncrSeverities" [value]="s">{{ s }}</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <input class="f-input" formControlName="detailOfNc"
+                           placeholder="Brief summary of non-conformance"
+                           [class.f-error]="isInvalid(rowGroup(ncrReports,i).get('detailOfNc'))">
+                    <div class="err-msg" *ngIf="isInvalid(rowGroup(ncrReports,i).get('detailOfNc'))">Required</div>
+                  </td>
+
+                  <td>
+                    <textarea class="f-textarea f-sm-ta" formControlName="description"
+                              rows="2" placeholder="Full description / root cause..."></textarea>
+                  </td>
+
+                  <td>
+                    <input class="f-input f-sm" formControlName="raisedBy" placeholder="Name">
+                  </td>
+
+                  <td>
+                    <input class="f-input f-date" formControlName="raisedDate" placeholder="DD-Mon-YY">
+                  </td>
+
+                  <td>
+                    <select class="f-select ncr-disp-sel" formControlName="dispositionStatus"
+                            [class.disp-open]="rowGroup(ncrReports,i).get('dispositionStatus')?.value === 'Open'"
+                            [class.disp-closed]="rowGroup(ncrReports,i).get('dispositionStatus')?.value === 'Closed'"
+                            [class.disp-repair]="rowGroup(ncrReports,i).get('dispositionStatus')?.value === 'Repair' ||
+                                                  rowGroup(ncrReports,i).get('dispositionStatus')?.value === 'Rework'">
+                      <option *ngFor="let d of ncrDispositions" [value]="d">{{ d }}</option>
+                    </select>
+                  </td>
+
+                  <td>
+                    <input class="f-input f-date" formControlName="targetClosureDate" placeholder="DD-Mon-YY">
+                  </td>
+
+                  <td class="td-del">
+                    <button type="button" class="btn-del" (click)="removeRow(ncrReports, i)"
+                            title="Remove NCR">✕</button>
+                  </td>
+                </tr>
+
+                <!-- Empty state row when no records -->
+                <tr *ngIf="ncrReports.length === 0">
+                  <td colspan="11" class="td-empty">
+                    No NCR records yet. Click <strong>+ Add NCR</strong> below to add one.
+                  </td>
+                </tr>
               </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="11" class="tfoot-add">
+                    <button type="button" class="btn btn-add" (click)="addNcr()">+ Add NCR</button>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
 
@@ -702,26 +819,437 @@
             </table>
           </div>
 
-          <!-- ── Bottom action bar ────────────────────────────── -->
+          <!-- ════════════════════════════════════════════════════
+               SECTION: Attachment  (Schedule + Photo Report)
+               Matches PDF page 2 exactly
+          ════════════════════════════════════════════════════ -->
+          <div class="section-panel" [class.section-hidden]="activeSection !== 'attachment'">
+            <div class="section-title">Attachment</div>
+
+            <!-- Two-column layout as a table: left = Schedule + Other | right = Photo Report -->
+            <table class="attachment-layout">
+              <tr>
+
+                <!-- ── LEFT: Schedule upload + Other notes ──────────────── -->
+                <td class="att-left-col">
+
+                  <!-- Schedule panel -->
+                  <div class="att-panel">
+                    <div class="att-panel-title">Schedule</div>
+                    <div class="att-panel-body">
+
+                      <!-- Drop zone -->
+                      <input type="file"
+                             #scheduleFileInput
+                             class="att-file-input"
+                             accept="image/*,application/pdf,.xlsx,.xls,.mpp,.xml"
+                             (change)="onScheduleSelected($event)">
+
+                      <div class="schedule-dropzone"
+                           [class.dz-drag]="isDragOverSchedule"
+                           [class.dz-has-file]="scheduleFileName"
+                           (click)="triggerScheduleUpload()"
+                           (dragover)="onScheduleDragOver($event)"
+                           (dragleave)="onScheduleDragLeave()"
+                           (drop)="onScheduleDrop($event)">
+
+                        <!-- Image preview -->
+                        <ng-container *ngIf="scheduleFileType === 'image' && schedulePreviewUrl">
+                          <img [src]="schedulePreviewUrl" class="schedule-img-preview" alt="Schedule preview">
+                        </ng-container>
+
+                        <!-- PDF indicator -->
+                        <ng-container *ngIf="scheduleFileType === 'pdf'">
+                          <div class="schedule-file-indicator">
+                            <div class="file-icon pdf-icon">PDF</div>
+                            <div class="file-name">{{ scheduleFileName }}</div>
+                            <div class="file-hint">Click to replace</div>
+                          </div>
+                        </ng-container>
+
+                        <!-- Other file type indicator -->
+                        <ng-container *ngIf="scheduleFileType === 'other'">
+                          <div class="schedule-file-indicator">
+                            <div class="file-icon other-icon">FILE</div>
+                            <div class="file-name">{{ scheduleFileName }}</div>
+                            <div class="file-hint">Click to replace</div>
+                          </div>
+                        </ng-container>
+
+                        <!-- Empty state -->
+                        <ng-container *ngIf="!scheduleFileName">
+                          <div class="dz-empty">
+                            <div class="dz-icon">
+                              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                              </svg>
+                            </div>
+                            <div class="dz-title">Upload Schedule / Gantt</div>
+                            <div class="dz-subtitle">Image, PDF, Excel or MS Project</div>
+                            <div class="dz-subtitle">Click or drag &amp; drop</div>
+                          </div>
+                        </ng-container>
+                      </div>
+
+                      <!-- File actions row -->
+                      <table class="schedule-actions-row" *ngIf="scheduleFileName">
+                        <tr>
+                          <td class="file-name-cell">
+                            <span class="att-file-badge">{{ scheduleFileName }}</span>
+                          </td>
+                          <td class="file-btn-cell">
+                            <button type="button" class="btn-att-action" (click)="triggerScheduleUpload()">Replace</button>
+                            <button type="button" class="btn-att-remove" (click)="removeSchedule()">✕ Remove</button>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div><!-- /Schedule panel -->
+
+                  <!-- Other panel -->
+                  <div class="att-panel" style="margin-top:10px">
+                    <div class="att-panel-title">Other</div>
+                    <div class="att-panel-body">
+                      <textarea class="f-textarea other-textarea"
+                                [(ngModel)]="otherNotes"
+                                [ngModelOptions]="{standalone: true}"
+                                rows="5"
+                                placeholder="Additional notes, comments or attachments..."></textarea>
+                    </div>
+                  </div>
+
+                </td><!-- /att-left-col -->
+
+                <!-- ── RIGHT: Photo Report ──────────────────────────────── -->
+                <td class="att-right-col">
+                  <div class="att-panel">
+                    <div class="att-panel-title">
+                      Photo Report
+                      <span class="photo-count-badge">{{ photos.length }} / {{ MAX_PHOTOS }}</span>
+                    </div>
+                    <div class="att-panel-body">
+
+                      <!-- 2-column photo grid rendered as a table (4 rows × 2 cols = 8 slots) -->
+                      <table class="photo-grid-table">
+                        <tr *ngFor="let row of photoRows; let rowIdx = index">
+                          <td *ngFor="let slot of [0,1]" class="photo-slot-cell"
+                              (dragover)="$event.preventDefault()"
+                              (drop)="onPhotoCellDrop($event, rowIdx * 2 + slot)">
+
+                            <!-- Filled slot -->
+                            <ng-container *ngIf="photoAt(rowIdx * 2 + slot) as photo">
+                              <div class="photo-card">
+
+                                <!-- Meta row: PO-Line | date | Activity -->
+                                <table class="photo-meta-table">
+                                  <tr>
+                                    <td class="pm-cell"><strong>PO-Line:</strong> {{ photo.poLine }}</td>
+                                    <td class="pm-cell">{{ photo.date }}</td>
+                                    <td class="pm-cell"><strong>Activity:</strong> {{ photo.activity }}</td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="3" class="pm-desc">{{ photo.description }}</td>
+                                  </tr>
+                                </table>
+
+                                <!-- Photo image -->
+                                <div class="photo-img-wrap">
+                                  <img *ngIf="photo.previewUrl"
+                                       [src]="photo.previewUrl"
+                                       class="photo-img"
+                                       [alt]="photo.description">
+                                  <div *ngIf="!photo.previewUrl" class="photo-no-img">No image</div>
+                                </div>
+
+                                <!-- Card actions -->
+                                <table class="photo-card-actions">
+                                  <tr>
+                                    <td>
+                                      <button type="button" class="btn-photo-edit"
+                                              (click)="openEditPhoto(rowIdx * 2 + slot)">Edit</button>
+                                    </td>
+                                    <td style="text-align:right">
+                                      <button type="button" class="btn-photo-del"
+                                              (click)="removePhoto(rowIdx * 2 + slot)">✕</button>
+                                    </td>
+                                  </tr>
+                                </table>
+                              </div>
+                            </ng-container>
+
+                            <!-- Empty slot -->
+                            <ng-container *ngIf="!photoAt(rowIdx * 2 + slot)">
+                              <div class="photo-empty-slot" *ngIf="canAddPhoto()"
+                                   (click)="openAddPhotoDialog()">
+                                <div class="photo-add-icon">+</div>
+                                <div class="photo-add-label">Add Photo</div>
+                                <div class="photo-add-hint">Click or drag image</div>
+                              </div>
+                              <div class="photo-empty-slot photo-slot-disabled" *ngIf="!canAddPhoto()"></div>
+                            </ng-container>
+
+                          </td>
+                        </tr>
+                      </table><!-- /photo-grid-table -->
+
+                      <div class="photo-grid-help">
+                        Drag images directly onto any slot, or click Add Photo. Max {{ MAX_PHOTOS }} photos.
+                      </div>
+
+                    </div>
+                  </div><!-- /Photo Report panel -->
+                </td><!-- /att-right-col -->
+
+              </tr>
+            </table><!-- /attachment-layout -->
+          </div><!-- /attachment section -->
+
+          <!-- ══════════════════════════════════════════════════════════
+               PHOTO DIALOG  (add / edit)
+          ══════════════════════════════════════════════════════════ -->
+          <div class="dialog-backdrop" *ngIf="showPhotoDialog" (click)="closePhotoDialog()"></div>
+          <div class="photo-dialog" *ngIf="showPhotoDialog">
+            <table class="dialog-header-table">
+              <tr>
+                <td class="dialog-title">{{ editPhotoIdx !== null ? 'Edit Photo' : 'Add Photo' }}</td>
+                <td class="dialog-close-cell">
+                  <button type="button" class="dialog-close-btn" (click)="closePhotoDialog()">✕</button>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Hidden file input -->
+            <input type="file"
+                   #photoFileInput
+                   class="att-file-input"
+                   accept="image/*"
+                   (change)="onPhotoFileSelected($event)">
+
+            <!-- Image upload area -->
+            <div class="dialog-img-upload"
+                 (click)="triggerPhotoUpload()"
+                 [class.has-img]="photoForm.previewUrl">
+              <img *ngIf="photoForm.previewUrl"
+                   [src]="photoForm.previewUrl"
+                   class="dialog-img-preview"
+                   alt="Photo preview">
+              <div *ngIf="!photoForm.previewUrl" class="dialog-img-empty">
+                <div class="dz-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.4">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                  </svg>
+                </div>
+                <div class="dz-title">Click to upload photo</div>
+              </div>
+            </div>
+
+            <!-- Photo metadata fields -->
+            <table class="dialog-fields-table">
+              <tr>
+                <td class="dlg-label-cell">PO-Line:</td>
+                <td class="dlg-input-cell">
+                  <input class="f-input" [(ngModel)]="photoForm.poLine"
+                         [ngModelOptions]="{standalone: true}" placeholder="e.g. 20 or Various">
+                </td>
+              </tr>
+              <tr>
+                <td class="dlg-label-cell">Date:</td>
+                <td class="dlg-input-cell">
+                  <input class="f-input f-date" [(ngModel)]="photoForm.date"
+                         [ngModelOptions]="{standalone: true}" placeholder="DD-Mon-YY">
+                </td>
+              </tr>
+              <tr>
+                <td class="dlg-label-cell">Activity:</td>
+                <td class="dlg-input-cell">
+                  <select class="f-select" [(ngModel)]="photoForm.activity"
+                          [ngModelOptions]="{standalone: true}">
+                    <option *ngFor="let a of activityOptions" [value]="a">{{ a }}</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="dlg-label-cell">Description:</td>
+                <td class="dlg-input-cell">
+                  <input class="f-input" [(ngModel)]="photoForm.description"
+                         [ngModelOptions]="{standalone: true}" placeholder="Brief description">
+                </td>
+              </tr>
+            </table>
+
+            <!-- Dialog action buttons -->
+            <table class="dialog-btn-table">
+              <tr>
+                <td>
+                  <button type="button" class="btn btn-reset" (click)="closePhotoDialog()">Cancel</button>
+                </td>
+                <td style="text-align:right">
+                  <button type="button" class="btn btn-submit" (click)="savePhotoDialog()">
+                    {{ editPhotoIdx !== null ? 'Update' : 'Add Photo' }}
+                  </button>
+                </td>
+              </tr>
+            </table>
+          </div><!-- /photo-dialog -->
+
+          <!-- ════════════════════════════════════════════════════
+               BOTTOM ACTION BAR
+               Back | Step indicator | Next | Save Draft | Submit
+          ════════════════════════════════════════════════════ -->
           <table class="bottom-bar">
             <tr>
-              <td class="bar-info">
-                <span *ngIf="form.invalid && submitted" class="validation-msg">
-                  ⚠ Please fix the highlighted fields before saving.
-                </span>
-                <span *ngIf="form.valid && submitted" class="success-msg">
-                  ✓ Form saved successfully.
-                </span>
+
+              <!-- Left: Back button -->
+              <td class="bar-back">
+                <button type="button"
+                        class="btn btn-nav btn-back"
+                        [disabled]="isFirstSection"
+                        (click)="goBack()">
+                  ← Back
+                </button>
               </td>
-              <td class="bar-btns">
-                <button type="button" class="btn btn-reset" (click)="onReset()">Reset All</button>
-                <button type="button" class="btn btn-submit" (click)="onSubmit()">Save SPR</button>
+
+              <!-- Centre: step progress indicator -->
+              <td class="bar-steps">
+                <table class="step-indicator-table">
+                  <tr>
+                    <td *ngFor="let sec of sections; let i = index"
+                        class="step-dot-cell">
+                      <div class="step-dot"
+                           [class.step-active]="activeSection === sec.id"
+                           [class.step-done]="currentSectionIndex > i"
+                           [title]="sec.label"
+                           (click)="setSection(sec.id)"></div>
+                    </td>
+                  </tr>
+                </table>
+                <div class="step-label">
+                  Step {{ currentSectionIndex + 1 }} of {{ sections.length }}
+                  — <span class="step-name">{{ sections[currentSectionIndex].label }}</span>
+                </div>
+              </td>
+
+              <!-- Right: Next | Save Draft | Submit -->
+              <td class="bar-actions">
+
+                <!-- Next (hidden on last section) -->
+                <button type="button"
+                        *ngIf="!isLastSection"
+                        class="btn btn-nav btn-next"
+                        (click)="goNext()">
+                  Next →
+                </button>
+
+                <!-- Save Draft -->
+                <button type="button"
+                        class="btn btn-draft"
+                        (click)="saveDraft()">
+                  💾 Save Draft
+                </button>
+
+                <!-- Submit (always visible) -->
+                <button type="button"
+                        class="btn btn-submit-final"
+                        (click)="openSubmitConfirm()">
+                  ✓ Submit SPR
+                </button>
+
               </td>
             </tr>
           </table>
+
+          <!-- ── Toast / status message ─────────────────────── -->
+          <div class="form-toast"
+               *ngIf="formMessage"
+               [class.toast-success]="formMessage.type === 'success'"
+               [class.toast-error]="formMessage.type === 'error'"
+               [class.toast-draft]="formMessage.type === 'draft'"
+               [class.toast-warning]="formMessage.type === 'warning'">
+            <span class="toast-icon">
+              <ng-container [ngSwitch]="formMessage.type">
+                <span *ngSwitchCase="'success'">✓</span>
+                <span *ngSwitchCase="'error'">✕</span>
+                <span *ngSwitchCase="'draft'">💾</span>
+                <span *ngSwitchCase="'warning'">⚠</span>
+              </ng-container>
+            </span>
+            {{ formMessage.text }}
+            <button type="button" class="toast-close" (click)="clearFormMessages()">×</button>
+          </div>
 
         </td><!-- /content-col -->
       </tr>
     </table>
   </form>
-</div>
+
+  <!-- ════════════════════════════════════════════════════════════════
+       SUBMIT CONFIRMATION MODAL
+  ════════════════════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" *ngIf="showSubmitConfirm" (click)="closeSubmitConfirm()"></div>
+  <div class="confirm-modal" *ngIf="showSubmitConfirm">
+
+    <table class="modal-header-table">
+      <tr>
+        <td class="modal-title-cell">Submit SPR</td>
+        <td class="modal-close-cell">
+          <button type="button" class="modal-close-btn" (click)="closeSubmitConfirm()">×</button>
+        </td>
+      </tr>
+    </table>
+
+    <div class="modal-body">
+      <div class="modal-icon">✓</div>
+      <div class="modal-heading">Ready to submit?</div>
+      <div class="modal-subtext">
+        Once submitted, the SPR will be finalised. Make sure all sections are complete.
+      </div>
+
+      <!-- Summary table -->
+      <table class="modal-summary-table">
+        <tr>
+          <td class="ms-label">SPR Rev. No.</td>
+          <td class="ms-value">{{ ctrl('version.revNo')?.value || '—' }}</td>
+          <td class="ms-label">Reference</td>
+          <td class="ms-value">{{ ctrl('version.reference')?.value || '—' }}</td>
+        </tr>
+        <tr>
+          <td class="ms-label">Supplier</td>
+          <td class="ms-value" colspan="3">{{ ctrl('supplier')?.value || '—' }}</td>
+        </tr>
+        <tr>
+          <td class="ms-label">GEV PO</td>
+          <td class="ms-value">{{ ctrl('gevPo')?.value || '—' }}</td>
+          <td class="ms-label">Date</td>
+          <td class="ms-value">{{ ctrl('version.date')?.value || '—' }}</td>
+        </tr>
+        <tr>
+          <td class="ms-label">PO Lines</td>
+          <td class="ms-value">{{ poLineItems.length }} rows</td>
+          <td class="ms-label">Photos</td>
+          <td class="ms-value">{{ photos.length }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <table class="modal-footer-table">
+      <tr>
+        <td>
+          <button type="button" class="btn btn-modal-cancel" (click)="closeSubmitConfirm()">
+            Cancel
+          </button>
+        </td>
+        <td style="text-align:right">
+          <button type="button" class="btn btn-modal-submit" (click)="onSubmit()">
+            ✓ Confirm &amp; Submit
+          </button>
+        </td>
+      </tr>
+    </table>
+
+  </div><!-- /confirm-modal -->
+
+</div><!-- /form-shell -->

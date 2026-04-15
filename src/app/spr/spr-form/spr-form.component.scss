@@ -501,3 +501,632 @@ $input-focus: #e8f0fb;
   margin-bottom: 12px;
   font-style: italic;
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+//  ATTACHMENT SECTION
+// ════════════════════════════════════════════════════════════════════════════
+
+.attachment-layout {
+  width: 100%;
+  border-collapse: collapse;
+  vertical-align: top;
+
+  .att-left-col  { width: 42%; vertical-align: top; padding-right: 10px; }
+  .att-right-col { width: 58%; vertical-align: top; padding-left: 4px; }
+}
+
+.att-panel {
+  border: 1px solid $border;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.att-panel-title {
+  background: $panel-head;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-bottom: 1px solid $border;
+  color: $hdr-dark;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  .photo-count-badge {
+    float: right;
+    background: $ge-blue;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+.att-panel-body { padding: 10px; }
+.att-file-input { display: none; }
+
+// ── Schedule drop zone ───────────────────────────────────────────────────────
+.schedule-dropzone {
+  min-height: 180px;
+  border: 2px dashed #9ca3af;
+  border-radius: 4px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+  overflow: hidden;
+
+  &:hover, &.dz-drag { border-color: $ge-blue; background: #eef3fb; }
+  &.dz-has-file      { border-style: solid; border-color: $ge-blue; }
+}
+
+.dz-empty {
+  min-height: 180px;
+  text-align: center;
+  padding-top: 30px;
+}
+
+.dz-icon     { display: block; text-align: center; }
+.dz-title    { display: block; font-size: 12px; font-weight: 600; color: #4b5563; margin-top: 8px; }
+.dz-subtitle { display: block; font-size: 10px; color: $muted; margin-top: 4px; }
+
+.schedule-img-preview {
+  width: 100%; max-height: 260px; object-fit: contain; display: block; padding: 4px;
+}
+
+.schedule-file-indicator {
+  padding: 40px 20px; text-align: center;
+
+  .file-icon {
+    display: inline-block; padding: 8px 14px; font-size: 11px; font-weight: 700;
+    border-radius: 4px; margin-bottom: 8px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    &.pdf-icon   { background: #fee2e2; color: #991b1b; }
+    &.other-icon { background: #e0f2fe; color: #0369a1; }
+  }
+  .file-name { font-size: 11px; font-weight: 600; color: $text; word-break: break-all; }
+  .file-hint { font-size: 10px; color: $muted; margin-top: 4px; }
+}
+
+.schedule-actions-row {
+  width: 100%; border-collapse: collapse; margin-top: 8px;
+  td { padding: 2px 0; }
+  .file-name-cell { width: 100%; }
+  .file-btn-cell  { white-space: nowrap; text-align: right; }
+}
+
+.att-file-badge {
+  display: inline-block; background: #f0f4fa; border: 1px solid $border;
+  border-radius: 3px; padding: 3px 8px; font-size: 10px; color: $text;
+  max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
+}
+
+.btn-att-action {
+  background: #e8f0fb; border: 1px solid $panel-head; color: $ge-blue;
+  font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 3px; cursor: pointer; margin-left: 6px;
+  &:hover { background: $panel-head; }
+}
+
+.btn-att-remove {
+  background: none; border: none; color: #ef4444; font-size: 10px; font-weight: 600;
+  padding: 3px 6px; cursor: pointer; margin-left: 4px;
+  &:hover { text-decoration: underline; }
+}
+
+.other-textarea { width: 100%; min-height: 100px; resize: vertical; }
+
+// ── Photo grid ───────────────────────────────────────────────────────────────
+.photo-grid-table {
+  width: 100%; border-collapse: separate; border-spacing: 6px;
+}
+
+.photo-slot-cell { width: 50%; vertical-align: top; padding: 0; }
+
+.photo-card {
+  border: 1px solid $border; border-radius: 3px; overflow: hidden; background: white;
+  transition: box-shadow .15s;
+  &:hover { box-shadow: 0 1px 6px rgba(0,0,0,.12); }
+}
+
+.photo-meta-table {
+  width: 100%; border-collapse: collapse;
+  background: #f0f4fa; border-bottom: 1px solid $border;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  .pm-cell { padding: 3px 5px; font-size: 8.5px; color: $text; white-space: nowrap; }
+  .pm-desc { padding: 2px 5px 3px; font-size: 8.5px; color: $muted; font-style: italic; }
+}
+
+.photo-img-wrap {
+  height: 110px; background: #e8edf5; overflow: hidden;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+
+.photo-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.photo-no-img {
+  width: 100%; height: 100%; display: table-cell;
+  text-align: center; vertical-align: middle; font-size: 10px; color: $muted; font-style: italic;
+}
+
+.photo-card-actions {
+  width: 100%; border-collapse: collapse; border-top: 1px solid $border;
+  td { padding: 3px 5px; }
+}
+
+.btn-photo-edit {
+  background: none; border: 1px solid $border; color: $ge-blue;
+  font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 3px; cursor: pointer;
+  &:hover { background: #e8f0fb; }
+}
+
+.btn-photo-del {
+  background: none; border: none; color: #ef4444; font-size: 12px; cursor: pointer; padding: 1px 4px; border-radius: 2px;
+  &:hover { background: #fee2e2; }
+}
+
+.photo-empty-slot {
+  min-height: 160px; border: 2px dashed #d1d5db; border-radius: 3px;
+  background: #fafbfc; cursor: pointer; text-align: center;
+  transition: border-color .15s, background .15s;
+  &:hover { border-color: $ge-blue; background: #eef3fb; }
+  &.photo-slot-disabled { cursor: default; opacity: .4; &:hover { border-color: #d1d5db; background: #fafbfc; } }
+}
+
+.photo-add-icon  { font-size: 28px; color: #9ca3af; padding-top: 36px; line-height: 1; }
+.photo-add-label { font-size: 11px; font-weight: 600; color: #4b5563; margin-top: 6px; }
+.photo-add-hint  { font-size: 9px; color: $muted; margin-top: 2px; }
+
+.photo-grid-help { font-size: 10px; color: $muted; text-align: center; margin-top: 8px; font-style: italic; }
+
+// ── Photo Dialog ─────────────────────────────────────────────────────────────
+.dialog-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 900;
+}
+
+.photo-dialog {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  z-index: 1000; background: white; border-radius: 6px;
+  width: 400px; max-width: 95vw; box-shadow: 0 8px 32px rgba(0,0,0,.25); overflow: hidden;
+}
+
+.dialog-header-table {
+  width: 100%; border-collapse: collapse; background: $ge-dark; color: white;
+  td { padding: 12px 16px; }
+  .dialog-title     { font-size: 13px; font-weight: 700; }
+  .dialog-close-cell{ text-align: right; width: 1%; }
+}
+
+.dialog-close-btn {
+  background: none; border: none; color: white; font-size: 16px; cursor: pointer; padding: 2px 6px; opacity: .75;
+  &:hover { opacity: 1; }
+}
+
+.dialog-img-upload {
+  margin: 12px 16px 0; height: 140px; border: 2px dashed #9ca3af;
+  border-radius: 4px; background: #f9fafb; cursor: pointer; overflow: hidden; transition: border-color .15s;
+  &:hover, &.has-img { border-color: $ge-blue; }
+}
+
+.dialog-img-preview { width: 100%; height: 100%; object-fit: contain; display: block; padding: 4px; }
+
+.dialog-img-empty {
+  width: 100%; height: 100%; display: table-cell; text-align: center; vertical-align: middle;
+}
+
+.dialog-fields-table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 0;
+  td { padding: 5px 16px; }
+  .dlg-label-cell { width: 90px; font-size: 11px; font-weight: 600; color: $muted; }
+}
+
+.dialog-btn-table {
+  width: 100%; border-collapse: collapse; padding: 12px 16px 14px;
+  td { padding: 4px 16px; }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  NCR / DEVIATION SECTION
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Stats bar ────────────────────────────────────────────────────────────────
+.ncr-stats-bar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+  background: white;
+  border: 1px solid $border;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ncr-stat-cell {
+  padding: 10px 20px;
+  text-align: center;
+  border-right: 1px solid $border;
+  vertical-align: middle;
+
+  &:last-of-type { border-right: none; }
+}
+
+.ncr-stat-spacer { width: 100%; }
+
+.ncr-stat-num {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text;
+  line-height: 1;
+}
+
+.ncr-stat-label {
+  font-size: 10px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-top: 3px;
+}
+
+.ncr-stat-open   .ncr-stat-num { color: #d97706; }
+.ncr-stat-closed .ncr-stat-num { color: #16a34a; }
+.ncr-stat-critical .ncr-stat-num { color: #dc2626; }
+
+// ── Column widths ─────────────────────────────────────────────────────────────
+.ncr-col-no       { width: 72px; }
+.ncr-col-po       { width: 58px; }
+.ncr-col-severity { width: 72px; }
+.ncr-col-detail   { width: 140px; }
+.ncr-col-desc     { width: 160px; }
+.ncr-col-raised   { width: 80px; }
+.ncr-col-date     { width: 82px; }
+.ncr-col-disp     { width: 100px; }
+.ncr-col-close    { width: 82px; }
+
+// ── Row colour coding ─────────────────────────────────────────────────────────
+.row-ncr-open {
+  background: #fffbeb !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.row-ncr-critical {
+  background: #fff1f2 !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+// ── Severity select colour coding ─────────────────────────────────────────────
+.ncr-severity-sel {
+  font-weight: 700;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  &.sev-minor    { background: #f0fdf4; color: #166534; border-color: #86efac; }
+  &.sev-major    { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+  &.sev-critical { background: #fff1f2; color: #9f1239; border-color: #fca5a5; }
+}
+
+// ── Disposition select colour coding ─────────────────────────────────────────
+.ncr-disp-sel {
+  font-weight: 600;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  &.disp-open   { background: #fffbeb; color: #92400e; border-color: #fcd34d; }
+  &.disp-closed { background: #f0fdf4; color: #166534; border-color: #86efac; }
+  &.disp-repair { background: #eff6ff; color: #1e40af; border-color: #93c5fd; }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  BOTTOM ACTION BAR  (Back | Step indicator | Next / Save Draft / Submit)
+// ════════════════════════════════════════════════════════════════════════════
+.bottom-bar {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-top: 2px solid $border;
+  background: white;
+  border-radius: 0 0 4px 4px;
+
+  td { padding: 10px 8px; vertical-align: middle; }
+
+  .bar-back    { width: 1%; white-space: nowrap; }
+  .bar-steps   { text-align: center; }
+  .bar-actions { width: 1%; white-space: nowrap; text-align: right; }
+}
+
+// ── Step dot progress indicator ───────────────────────────────────────────────
+.step-indicator-table {
+  border-collapse: collapse;
+  margin: 0 auto 4px;
+}
+
+.step-dot-cell { padding: 0 3px; }
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  display: inline-block;
+
+  &:hover      { background: #9ca3af; transform: scale(1.2); }
+  &.step-done  { background: $ge-blue; }
+  &.step-active {
+    background: $sisu-red;
+    transform: scale(1.3);
+    box-shadow: 0 0 0 2px rgba($sisu-red, .25);
+  }
+}
+
+.step-label {
+  font-size: 11px;
+  color: $muted;
+  margin-top: 2px;
+}
+
+.step-name { font-weight: 600; color: $ge-dark; }
+
+// ── Nav buttons ───────────────────────────────────────────────────────────────
+.btn-nav {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid $border;
+  background: white;
+  color: $ge-dark;
+  transition: background .15s, transform .1s;
+
+  &:hover:not(:disabled) { background: #f0f4fa; transform: translateY(-1px); }
+  &:active:not(:disabled){ transform: translateY(0); }
+  &:disabled { opacity: .35; cursor: not-allowed; }
+
+  &.btn-back { margin-right: 4px; }
+  &.btn-next { margin-right: 6px; }
+}
+
+// ── Save Draft button ─────────────────────────────────────────────────────────
+.btn-draft {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #a78bfa;
+  background: #f5f3ff;
+  color: #5b21b6;
+  margin-right: 6px;
+  transition: background .15s, transform .1s;
+
+  &:hover  { background: #ede9fe; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+// ── Final Submit button ───────────────────────────────────────────────────────
+.btn-submit-final {
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  background: $ge-blue;
+  color: white;
+  transition: background .15s, transform .1s;
+
+  &:hover  { background: darken($ge-blue, 8%); transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+// ── Topbar button variants ────────────────────────────────────────────────────
+.btn-topbar-draft {
+  @extend .btn-draft;
+  margin-left: 8px;
+}
+
+.btn-topbar-reset {
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.3);
+  color: white;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background .15s;
+  &:hover { background: rgba(255,255,255,.2); }
+}
+
+.btn-topbar-submit {
+  @extend .btn-submit-final;
+  margin-left: 8px;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  TOAST MESSAGE
+// ════════════════════════════════════════════════════════════════════════════
+.form-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  display: table;               // table-based layout for icon + text + close
+  width: auto;
+  max-width: 380px;
+  animation: slideInUp .25s ease;
+
+  .toast-icon { display: table-cell; padding-right: 10px; font-size: 15px; vertical-align: middle; }
+  .toast-close {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 14px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: .6;
+    line-height: 1;
+    &:hover { opacity: 1; }
+  }
+
+  &.toast-success { background: #f0fdf4; color: #166534; border-left-color: #16a34a; }
+  &.toast-error   { background: #fff1f2; color: #991b1b; border-left-color: #dc2626; }
+  &.toast-draft   { background: #f5f3ff; color: #5b21b6; border-left-color: #7c3aed; }
+  &.toast-warning { background: #fffbeb; color: #92400e; border-left-color: #d97706; }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+//  SUBMIT CONFIRMATION MODAL
+// ════════════════════════════════════════════════════════════════════════════
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .50);
+  z-index: 1500;
+}
+
+.confirm-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1600;
+  background: white;
+  border-radius: 8px;
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+  overflow: hidden;
+  animation: modalIn .2s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.modal-header-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $ge-dark;
+  color: white;
+
+  .modal-title-cell { padding: 14px 20px; font-size: 14px; font-weight: 700; }
+  .modal-close-cell { padding: 14px 16px; text-align: right; width: 1%; }
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: .7;
+  line-height: 1;
+  padding: 0 4px;
+  &:hover { opacity: 1; }
+}
+
+.modal-body {
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.modal-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #d1fae5;
+  color: #065f46;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 52px;    // vertical-centre via line-height — no flex
+  text-align: center;
+  margin: 0 auto 12px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.modal-heading  { font-size: 16px; font-weight: 700; color: $ge-dark; margin-bottom: 6px; }
+.modal-subtext  { font-size: 12px; color: $muted; margin-bottom: 16px; }
+
+// ── Summary grid inside modal ─────────────────────────────────────────────────
+.modal-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid $border;
+  border-radius: 4px;
+  overflow: hidden;
+  font-size: 12px;
+  text-align: left;
+
+  tr { border-bottom: 1px solid $border; }
+  tr:last-child { border-bottom: none; }
+
+  .ms-label {
+    background: #f8fafc;
+    color: $muted;
+    font-weight: 600;
+    padding: 7px 12px;
+    width: 22%;
+    white-space: nowrap;
+    border-right: 1px solid $border;
+  }
+
+  .ms-value {
+    padding: 7px 12px;
+    color: $text;
+    border-right: 1px solid $border;
+    &:last-child { border-right: none; }
+  }
+}
+
+.modal-footer-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f8fafc;
+  border-top: 1px solid $border;
+
+  td { padding: 14px 20px; }
+}
+
+.btn-modal-cancel {
+  background: white;
+  border: 1px solid $border;
+  color: $ge-dark;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover { background: #f0f4fa; }
+}
+
+.btn-modal-submit {
+  background: $ge-blue;
+  border: none;
+  color: white;
+  padding: 9px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s;
+  &:hover { background: darken($ge-blue, 8%); }
+}
